@@ -73,6 +73,10 @@ flowchart TD
    - Update this README
    - Push everything to GitHub
 
+## License
+
+This work is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
 ## Why this workflow matters
 
 Claude Desktop is great for generating long-form content but can't easily wire up local file references or test them in context. Kiro bridges that gap — it sees the filesystem, edits in place, and verifies the result. The whole project is an instance of intentional programming: human intent in, AI-generated artifacts out, iteratively refined through dialogue.
