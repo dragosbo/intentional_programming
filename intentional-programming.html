@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Intentional Programming Paradigm</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f6f7f9;
+    color: #1c2024;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, #1f6feb 0%, #7c3aed 100%);
+    color: #fff;
+    border-radius: 20px;
+    padding: 44px 40px;
+    margin-bottom: 16px;
+    box-shadow: 0 10px 30px rgba(31,111,235,0.18);
+  }
+  header.hero .kicker { text-transform: uppercase; letter-spacing: 0.14em; font-size: 12px; font-weight: 600; opacity: 0.85; margin: 0 0 12px; }
+  header.hero h1 { margin: 0 0 14px; font-size: 34px; line-height: 1.15; font-weight: 700; }
+  header.hero p { margin: 0; font-size: 17px; opacity: 0.95; max-width: 640px; }
+
+  /* Top infographic */
+  .figtop { margin: 8px 0 4px; }
+  .figtop img { display:block; width:100%; height:auto; border-radius:16px; border:1px solid #e6e8eb; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+  .figtop .missing { display:none; align-items:center; justify-content:center; text-align:center; padding:30px 22px; border:2px dashed #cfd4da; border-radius:16px; color:#5b6470; font-size:14px; background:#fbfcfd; }
+  .figtop figcaption { text-align:center; font-size:12.5px; color:#8b98a5; margin-top:8px; }
+
+  /* Top infographic */
+  .figtop { margin: 8px 0 4px; }
+  .figtop img { display:block; width:100%; height:auto; border-radius:16px; border:1px solid #e6e8eb; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+  .figtop .missing { display:none; align-items:center; justify-content:center; text-align:center; padding:30px 22px; border:2px dashed #cfd4da; border-radius:16px; color:#5b6470; font-size:14px; background:#fbfcfd; }
+  .figtop figcaption { text-align:center; font-size:12.5px; color:#8b98a5; margin-top:8px; }
+
+  /* Sticky nav */
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; flex-wrap: wrap; gap: 7px;
+    padding: 12px; margin: 0 0 28px;
+    background: rgba(246,247,249,0.92);
+    backdrop-filter: saturate(160%) blur(8px);
+    border: 1px solid #e6e8eb; border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .nav a {
+    font-size: 12.5px; font-weight: 600; text-decoration: none;
+    color: #3a4149; background: #fff; border: 1px solid #e0e3e7;
+    padding: 5px 11px; border-radius: 999px; transition: all .15s ease;
+    white-space: nowrap;
+  }
+  .nav a:hover { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+
+  h2 { font-size: 24px; margin: 46px 0 14px; padding-bottom: 8px; border-bottom: 2px solid #e6e8eb; scroll-margin-top: 76px; }
+  h3 { font-size: 18px; margin: 26px 0 8px; }
+  p { margin: 0 0 16px; }
+  .lead { font-size: 18px; color: #3a4149; }
+  .muted { color: #5b6470; }
+  em.hl { font-style: normal; background: linear-gradient(180deg, transparent 62%, #ffe8a3 62%); padding: 0 2px; }
+  code { background: #eceef1; padding: 2px 7px; border-radius: 6px; font-size: 14px; color: #7c3aed; font-family: "SF Mono", Menlo, Consolas, monospace; }
+
+  /* Timeline */
+  .timeline { margin: 24px 0 8px; border-left: 3px solid #d7dbe0; padding-left: 4px; }
+  .t-item { position: relative; padding: 0 0 22px 28px; }
+  .t-item::before { content: ""; position: absolute; left: -9px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: #9aa4b0; border: 3px solid #f6f7f9; }
+  .t-item.now::before { background: #7c3aed; box-shadow: 0 0 0 4px rgba(124,58,237,0.18); }
+  .t-year { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #1f6feb; text-transform: uppercase; }
+  .t-item.now .t-year { color: #7c3aed; }
+  .t-name { font-weight: 700; font-size: 16px; margin: 2px 0 3px; }
+  .t-desc { font-size: 14.5px; color: #4a525c; margin: 0; }
+  .t-desc .spec { color: #1c2024; font-weight: 600; }
+
+  /* Chart */
+  .chartbox { background:#fff; border:1px solid #e6e8eb; border-radius:16px; padding:18px 16px 10px; margin:20px 0; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+  .chartbox svg { width:100%; height:auto; display:block; }
+  .legend { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; padding:8px 6px 4px; font-size:12.5px; color:#4a525c; }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i { width:11px; height:11px; border-radius:50%; display:inline-block; }
+
+  /* Device table */
+  .devtable { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:10px; }
+  .devtable th, .devtable td { text-align:left; padding:6px 8px; border-bottom:1px solid #eceef1; }
+  .devtable th { color:#5b6470; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; font-weight:700; }
+  .devtable td:first-child { font-weight:700; color:#1c2024; }
+  .devtable td em { color:#5b6470; font-style:normal; }
+  .dev { display:inline-block; width:19px; height:19px; line-height:19px; text-align:center; border-radius:5px; color:#fff; font-weight:700; font-size:10.5px; margin-right:3px; }
+  .dev.d{ background:#1f6feb; } .dev.c{ background:#7c3aed; } .dev.p{ background:#0891b2; } .dev.w{ background:#c2410c; }
+
+  /* Worked example */
+  .example { background:#fff; border:1px solid #e6e8eb; border-radius:14px; padding:16px 18px; margin:14px 0; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+  .example .head { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  .example .dot { width:12px; height:12px; border-radius:50%; flex:0 0 auto; }
+  .example h4 { margin:0; font-size:16px; }
+  .example .lang { font-size:11px; color:#5b6470; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-left:auto; }
+  .example p.note { font-size:13px; color:#5b6470; margin:8px 0 0; }
+  pre.code { background:#0f141a; color:#e6edf3; border-radius:12px; padding:14px 16px; overflow-x:auto; font-family:"SF Mono", Menlo, Consolas, monospace; font-size:12.5px; line-height:1.55; margin:0; white-space:pre; }
+  .intent { background:#faf7ff; border:1px solid #e9defb; border-radius:10px; padding:10px 12px; font-size:13.5px; color:#2f2a3d; margin:8px 0 0; }
+  .intent .lg { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#7c3aed; display:block; margin-bottom:3px; }
+  .madewith { background:#f3ecff; border:1px solid #e0d0f7; border-radius:10px; padding:10px 12px; font-size:13px; color:#4a3d63; margin:10px 0 0; }
+  .madewith strong { color:#6d28d9; }
+
+  /* Playable game */
+  .game { border:1px solid #e9defb; background:#faf7ff; border-radius:12px; padding:14px 16px; margin:10px 0 0; }
+  .game .game-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .game input[type=number] { width:96px; padding:8px 10px; border:1px solid #d0c4ea; border-radius:8px; font-size:14px; background:#fff; color:#1c2024; }
+  .game button { padding:8px 14px; border:none; border-radius:8px; background:#7c3aed; color:#fff; font-weight:700; font-size:13px; cursor:pointer; }
+  .game button.secondary { background:#eceef1; color:#3a4149; }
+  .game .msg { font-size:14px; font-weight:600; margin:12px 0 0; }
+  .game .tries { font-size:12.5px; color:#5b6470; margin:4px 0 0; min-height:16px; }
+
+  /* Where-the-time-goes bars */
+  .shift { margin:16px 0 4px; }
+  .shift .barrow { display:flex; align-items:center; gap:10px; margin:8px 0; }
+  .shift .barlabel { width:74px; font-size:12px; font-weight:700; color:#3a4149; flex:0 0 auto; text-align:right; }
+  .shift .bar { display:flex; height:30px; border-radius:7px; overflow:hidden; flex:1; }
+  .shift .seg { flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; }
+  .shift .legend2 { display:flex; gap:14px; font-size:12px; margin-top:8px; color:#4a525c; flex-wrap:wrap; }
+  .shift .legend2 span { display:inline-flex; align-items:center; gap:6px; }
+  .shift .legend2 i { width:11px; height:11px; border-radius:3px; display:inline-block; }
+
+  /* Paradigm family tree */
+  .tree { margin:16px 0 4px; }
+  .tree .meta { background:linear-gradient(135deg,#7c3aed,#a855f7); color:#fff; border-radius:12px; padding:12px 16px; text-align:center; }
+  .tree .meta b { font-size:15px; }
+  .tree .meta span { display:block; font-size:12px; opacity:0.92; margin-top:2px; }
+  .tree .fanlabel { text-align:center; font-size:12px; color:#7c3aed; font-weight:700; margin:8px 0; }
+  .tree .cols { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:560px){ .tree .cols { grid-template-columns:1fr; } }
+  .tree .fam { border:1px solid #e6e8eb; border-radius:12px; padding:10px; }
+  .tree .fam.imp { background:#f0f7ff; }
+  .tree .fam.dec { background:#f0fbf4; }
+  .tree .fhead { font-weight:700; font-size:13px; text-align:center; margin-bottom:8px; }
+  .tree .fam.imp .fhead { color:#1a5fc4; }
+  .tree .fam.dec .fhead { color:#0b7a44; }
+  .tree .leaves { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .tree .leaf { background:#fff; border:1px solid #e0e3e7; border-radius:9px; padding:8px 10px; text-align:center; font-size:12.5px; font-weight:700; color:#1c2024; }
+  .tree .leaf span { display:block; font-size:11px; font-weight:500; color:#5b6470; margin-top:2px; }
+
+  /* References */
+  .refs { font-size:14px; padding-left:20px; }
+  .refs li { margin:8px 0; }
+  .refs a { color:#1f6feb; text-decoration:none; }
+  .refs a:hover { text-decoration:underline; }
+
+  /* Property cards */
+  .cards { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 18px 0; }
+  @media (min-width: 620px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+  .card { background: #fff; border: 1px solid #e6e8eb; border-radius: 14px; padding: 18px 18px 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+  .card .num { font-size: 13px; font-weight: 700; color: #7c3aed; }
+  .card h4 { margin: 6px 0 8px; font-size: 16px; }
+  .card p { font-size: 14px; color: #4a525c; margin: 0; }
+
+  /* Loop diagram */
+  .loopbox { background: #fff; border: 1px solid #e6e8eb; border-radius: 16px; padding: 20px; margin: 20px 0; text-align: center; }
+  .loopbox svg { max-width: 100%; height: auto; }
+
+  /* Unlock blocks */
+  .unlock { background:#fff; border:1px solid #e6e8eb; border-radius:16px; padding:22px 24px; margin:18px 0; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+  .unlock .tag { display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#1f6feb; background:#eef4ff; padding:4px 10px; border-radius:999px; margin-bottom:10px; }
+  .unlock h3 { margin:0 0 8px; font-size:19px; }
+  .unlock p { font-size:15px; }
+
+  /* Analogy */
+  .analogy { border-left: 4px solid #7c3aed; background:#faf7ff; border-radius:0 12px 12px 0; padding:14px 18px; margin:14px 0 4px; }
+  .analogy .lbl { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#7c3aed; display:block; margin-bottom:4px; }
+  .analogy p { margin:0; font-size:14.5px; color:#3a3350; }
+
+  /* stack diagram */
+  .stack { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px; }
+  .stack .layer { flex:1 1 auto; text-align:center; padding:9px 12px; border-radius:9px; font-size:13px; font-weight:700; color:#fff; min-width:84px; }
+
+  /* Equation box */
+  .eq { background: #10151c; color: #e7edf3; border-radius: 14px; padding: 22px 24px; margin: 20px 0; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 15px; line-height: 1.9; overflow-x: auto; }
+  .eq .var { color: #79c0ff; }
+  .eq .op { color: #ff9d6b; }
+  .eq .cmt { color: #8b98a5; }
+
+  /* Callout */
+  .callout { border-radius: 14px; padding: 18px 20px; margin: 20px 0; }
+  .callout.warn { background: #fff5f0; border: 1px solid #ffd9c2; }
+  .callout.warn strong { color: #c2410c; }
+  .callout.tip { background: #f0f7ff; border: 1px solid #cfe4ff; }
+  .callout.tension { background:#fffaf0; border:1px solid #ffe6b0; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* People */
+  .person { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid #eceef1; }
+  .person:last-child { border-bottom: none; }
+  .badge { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; }
+  .person .body { flex: 1; }
+  .person .body strong { font-size: 15.5px; }
+  .person .body p { font-size: 14px; color: #4a525c; margin: 3px 0 0; }
+
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: #eceef1; color: #5b6470; margin-left: 6px; }
+
+  /* Meme wall */
+  .memewall { display:grid; grid-template-columns:1fr; gap:14px; margin:20px 0; }
+  @media (min-width:560px){ .memewall { grid-template-columns:1fr 1fr; } }
+  .meme { border-radius:16px; padding:20px 20px 18px; color:#fff; box-shadow:0 6px 16px rgba(0,0,0,0.10); }
+  .meme .slogan { font-size:21px; font-weight:800; line-height:1.2; letter-spacing:-0.01em; margin:0 0 8px; }
+  .meme .gloss { font-size:13px; opacity:0.92; margin:0; font-weight:500; }
+  .m1 { background:linear-gradient(135deg,#1f6feb,#3b82f6); }
+  .m2 { background:linear-gradient(135deg,#7c3aed,#a855f7); }
+  .m3 { background:linear-gradient(135deg,#0f9d58,#10b981); }
+  .m4 { background:linear-gradient(135deg,#c2410c,#f97316); }
+  .m5 { background:linear-gradient(135deg,#0891b2,#06b6d4); }
+  .m6 { background:linear-gradient(135deg,#4338ca,#6366f1); }
+  .m7 { background:linear-gradient(135deg,#be185d,#ec4899); }
+  .m8 { background:linear-gradient(135deg,#334155,#64748b); }
+  .m9 { background:linear-gradient(135deg,#0f766e,#14b8a6); }
+  .m10 { background:linear-gradient(135deg,#7c2d12,#b45309); }
+
+  .oneliner { background: linear-gradient(135deg, #f0f7ff, #f6f0ff); border: 1px solid #dbe6f5; border-radius: 16px; padding: 24px 26px; margin: 30px 0 0; font-size: 17px; line-height: 1.6; }
+  .oneliner strong { color: #7c3aed; }
+  footer { margin-top: 40px; font-size: 12.5px; color: #8b98a5; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">A Framing</p>
+    <h1>The Intentional Programming Paradigm</h1>
+    <p>You don't write the program. You express intent — in any medium — and converge on the result through an iterative loop with a reasoning agent. Declarative in spirit, but with natural language as the spec and dialogue as the compiler.</p>
+  </header>
+
+  <nav class="nav" aria-label="Jump to section">
+    <a href="#lineage">Lineage</a>
+    <a href="#quadrant">Quadrant</a>
+    <a href="#meta">Meta-paradigm</a>
+    <a href="#steering">Steering</a>
+    <a href="#new">What's New</a>
+    <a href="#loop">The Loop</a>
+    <a href="#unlocks">Unlocks</a>
+    <a href="#harness">Harness</a>
+    <a href="#tooling">Tooling</a>
+    <a href="#tension">Tension</a>
+    <a href="#engineering">Programming vs Engineering</a>
+    <a href="#who">Who's Best</a>
+    <a href="#yolo">YOLO</a>
+    <a href="#example">Example</a>
+    <a href="#memes">Memes</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <p class="lead">People call this "chat programming" or <em class="hl">"vibe coding"</em> — but those name the interface and the vibe, not the paradigm underneath. What's actually new is a shift along the oldest axis in programming — how much of the "how" you have to specify yourself — plus something no earlier paradigm had: the work spans many languages at once, runs on many minds at once, and teaches you while you do it.</p>
+
+  <figure class="figtop">
+    <img src="Intentional_Programming_Paradigm_Shift.png" alt="Claymation-style infographic titled 'Intentional Programming: From Writing Code to Steering Intent.' Left: the old way — a stressed developer at a keyboard buried in crumpled paper (high predictability, manual steps). Center: 'The loop is the paradigm' — express intent, agent proposes, human evaluates, human refines — plus the harness vs. model, the new engineering bottleneck, and a before/after bar of time spent (writing collapses, reviewing and design grow). Right: the new way — a director shouting the vision through a megaphone while worker figures build with Python, SQL, and CSS blocks; and a chart showing the trade of determinism for expressive power." onerror="this.style.display='none'; this.parentElement.querySelector('.missing').style.display='flex';">
+    <div class="missing">Infographic goes here — save the attached image as <code>Intentional_Programming_Paradigm_Shift.png</code> in the same folder as this file to display it.</div>
+    <figcaption>Intentional Programming at a glance: the old way vs. the new way · the loop · the harness · the determinism trade-off. (Claymation infographic, made with Gemini Notebook.)</figcaption>
+  </figure>
+
+  <div class="podcast-player" style="display:flex; align-items:center; gap:14px; background:#fff; border:1px solid #e6e8eb; border-radius:14px; padding:14px 18px; margin:12px 0 24px; box-shadow:0 1px 2px rgba(0,0,0,0.03);">
+    <button onclick="document.getElementById('podcast-audio').paused ? document.getElementById('podcast-audio').play() : document.getElementById('podcast-audio').pause()" style="flex:0 0 auto; width:48px; height:48px; border-radius:50%; border:none; background:linear-gradient(135deg,#7c3aed,#a855f7); color:#fff; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(124,58,237,0.25); transition:transform .15s ease;" onmouseenter="this.style.transform='scale(1.08)'" onmouseleave="this.style.transform='scale(1)'">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <div style="flex:1;">
+      <div style="font-weight:700; font-size:14px; color:#1c2024;">🎧 Listen to the Podcast</div>
+      <div style="font-size:12.5px; color:#5b6470; margin-top:2px;">From Writing Code to Steering Agents</div>
+    </div>
+    <audio id="podcast-audio" src="From_writing_code_to_steering_agents.m4a" preload="metadata"></audio>
+  </div>
+
+  <h2 id="lineage">The lineage of paradigms</h2>
+  <p>Every paradigm shift has moved the programmer further from the machine's "how" and closer to pure "what." This is simply the newest link in that chain.</p>
+
+  <div class="timeline">
+    <div class="t-item">
+      <div class="t-year">1940s–50s · Machine &amp; Assembly</div>
+      <div class="t-name">Imperative, at the hardware</div>
+      <p class="t-desc">You specify <span class="spec">every instruction and register</span>. The machine does exactly and only what you say. Maximum control, maximum burden.</p>
+    </div>
+    <div class="t-item">
+      <div class="t-year">1957+ · Procedural / Structured</div>
+      <div class="t-name">Fortran, COBOL, C</div>
+      <p class="t-desc">You specify <span class="spec">the steps</span>, but in human-readable form. A compiler translates to machine code — the first big delegation of "how."</p>
+    </div>
+    <div class="t-item">
+      <div class="t-year">1958+ · Functional / Declarative</div>
+      <div class="t-name">Lisp, SQL, Prolog</div>
+      <p class="t-desc">You specify <span class="spec">the what — the target result</span>. A fixed engine (query planner, resolver) computes the steps. Deterministic: a correct spec yields a correct result in one shot.</p>
+    </div>
+    <div class="t-item">
+      <div class="t-year">1967+ · Object-Oriented</div>
+      <div class="t-name">Simula, Smalltalk, C++, Java</div>
+      <p class="t-desc">You specify <span class="spec">objects and their interactions</span> — organizing complexity around state and behavior rather than raw procedure.</p>
+    </div>
+    <div class="t-item now">
+      <div class="t-year">2022+ · Intentional / Agentic <span class="pill">this one</span></div>
+      <div class="t-name">Multimodal intent + a reasoning harness</div>
+      <p class="t-desc">You specify <span class="spec">intent, in whatever medium fits</span>. A <em>reasoning</em> engine infers the how — across many languages at once — and you converge on correctness through a feedback loop. The compiler is a conversation.</p>
+    </div>
+  </div>
+
+  <h2 id="quadrant">The paradigm quadrant</h2>
+  <p>Plot the paradigms on the two axes that carry this whole story — <strong>abstraction</strong> (how much of the "how" you delegate) against <strong>determinism</strong> (how predictable the output is) — and the history draws itself.</p>
+
+  <div class="chartbox">
+    <svg viewBox="0 0 780 580" role="img" aria-label="A 2x2 quadrant chart plotting programming paradigms by abstraction (x-axis) and determinism (y-axis), with the decade each first became operational.">
+      <defs>
+        <marker id="drift" markerWidth="11" markerHeight="11" refX="7" refY="3.2" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3.2 L0,6.4 Z" fill="#e11d48"></path>
+        </marker>
+      </defs>
+
+      <!-- caption (above the plot, no overlap) -->
+      <text x="415" y="30" font-family="inherit" font-size="13" fill="#e11d48" font-weight="700" text-anchor="middle">The ~70-year drift: every paradigm moved rightward but stayed high…</text>
+      <text x="415" y="49" font-family="inherit" font-size="13" fill="#e11d48" font-weight="700" text-anchor="middle">…until the agentic break — the first dive into the bottom-right.</text>
+
+      <!-- quadrant tints -->
+      <rect x="90"  y="68"  width="325" height="192" fill="#eaf2ff"></rect>
+      <rect x="415" y="68"  width="325" height="192" fill="#eafbf1"></rect>
+      <rect x="415" y="260" width="325" height="192" fill="#f4ecff"></rect>
+      <rect x="90"  y="260" width="325" height="192" fill="#f1f2f4"></rect>
+
+      <!-- plot border + center cross -->
+      <rect x="90" y="68" width="650" height="384" fill="none" stroke="#d7dbe0" stroke-width="1.5"></rect>
+      <line x1="415" y1="68" x2="415" y2="452" stroke="#c3c9d0" stroke-width="1.2" stroke-dasharray="5,5"></line>
+      <line x1="90" y1="260" x2="740" y2="260" stroke="#c3c9d0" stroke-width="1.2" stroke-dasharray="5,5"></line>
+
+      <!-- quadrant labels, tucked into empty corners -->
+      <g font-family="inherit" font-size="12.5" font-style="italic" text-anchor="middle">
+        <text x="250" y="248" font-weight="700" font-style="normal" fill="#3f6ab0" opacity="0.72">Manual &amp; Predictable</text>
+        <text x="578" y="248" font-weight="700" font-style="normal" fill="#2f8f5b" opacity="0.72">Declarative &amp; Predictable</text>
+        <text x="250" y="430" fill="#8a929c">low-level &amp; unpredictable</text>
+        <text x="250" y="446" font-size="11" fill="#8a929c">(nobody lives here)</text>
+        <text x="470" y="440" font-weight="700" font-style="normal" fill="#7c3aed" opacity="0.8">Expressive &amp; Emergent — the frontier</text>
+      </g>
+
+      <!-- drift arrow: across the top, then the dive -->
+      <path d="M142,110 C 300,96 430,104 532,118 C 620,142 670,255 686,338"
+            fill="none" stroke="#e11d48" stroke-width="2.2" stroke-dasharray="2,6" stroke-linecap="round" marker-end="url(#drift)" opacity="0.75"></path>
+
+      <!-- data points + labels (each with the decade it became operational) -->
+      <g font-family="inherit">
+        <!-- Machine -->
+        <circle cx="142" cy="103" r="7" fill="#64748b" stroke="#fff" stroke-width="2"></circle>
+        <text x="155" y="99"  font-size="13" font-weight="700" fill="#42505f">Machine &amp; Assembly</text>
+        <text x="155" y="114" font-size="11" font-weight="600" fill="#8a929c">1940s</text>
+        <!-- Procedural -->
+        <circle cx="272" cy="119" r="7" fill="#0891b2" stroke="#fff" stroke-width="2"></circle>
+        <text x="285" y="130" font-size="13" font-weight="700" fill="#0e7490">Procedural / C</text>
+        <text x="285" y="145" font-size="11" font-weight="600" fill="#8a929c">1950s</text>
+        <!-- OOP -->
+        <circle cx="396" cy="130" r="7" fill="#1f6feb" stroke="#fff" stroke-width="2"></circle>
+        <text x="409" y="141" font-size="13" font-weight="700" fill="#1a5fc4">Object-Oriented</text>
+        <text x="409" y="156" font-size="11" font-weight="600" fill="#8a929c">1960s</text>
+        <!-- Declarative -->
+        <circle cx="532" cy="111" r="7" fill="#0f9d58" stroke="#fff" stroke-width="2"></circle>
+        <text x="545" y="107" font-size="13" font-weight="700" fill="#0b7a44">Declarative / Functional</text>
+        <text x="545" y="122" font-size="11" font-weight="600" fill="#8a929c">1950s–70s (Lisp → SQL)</text>
+        <!-- Agentic -->
+        <circle cx="688" cy="345" r="10" fill="#7c3aed" stroke="#fff" stroke-width="2.5"></circle>
+        <circle cx="688" cy="345" r="16" fill="none" stroke="#7c3aed" stroke-width="1.5" opacity="0.35"></circle>
+        <text x="674" y="340" font-size="13.5" font-weight="800" fill="#6d28d9" text-anchor="end">Intentional / Agentic</text>
+        <text x="674" y="357" font-size="11.5" font-weight="600" fill="#8b5cf6" text-anchor="end">2020s · (this one)</text>
+      </g>
+
+      <!-- axis titles -->
+      <text x="415" y="498" font-size="13.5" font-weight="700" fill="#1c2024" text-anchor="middle">Abstraction  —  how much of the "how" you delegate  →</text>
+      <text x="96" y="478" font-size="11" fill="#8b98a5" text-anchor="start">write the machine code</text>
+      <text x="734" y="478" font-size="11" fill="#8b98a5" text-anchor="end">express pure intent</text>
+      <text x="30" y="260" font-size="13.5" font-weight="700" fill="#1c2024" text-anchor="middle" transform="rotate(-90 30 260)">Determinism  —  predictability of output  →</text>
+      <text x="56" y="104" font-size="11" fill="#8b98a5" text-anchor="middle" transform="rotate(-90 56 104)">guaranteed</text>
+      <text x="56" y="418" font-size="11" fill="#8b98a5" text-anchor="middle" transform="rotate(-90 56 418)">probabilistic</text>
+    </svg>
+    <div class="legend">
+      <span><i style="background:#64748b;"></i>Machine &amp; Assembly · 1940s</span>
+      <span><i style="background:#0891b2;"></i>Procedural · 1950s</span>
+      <span><i style="background:#1f6feb;"></i>Object-Oriented · 1960s</span>
+      <span><i style="background:#0f9d58;"></i>Declarative · 1950s–70s</span>
+      <span><i style="background:#7c3aed;"></i>Intentional / Agentic · 2020s</span>
+    </div>
+    <p class="muted" style="text-align:center; font-size:11.5px; margin:2px 0 4px;">Decade = when the paradigm first became operational in practice.</p>
+  </div>
+
+  <p><strong>What the chart says.</strong> For roughly seventy years, every paradigm drifted in the <em>same</em> direction — rightward, delegating more of the "how" — while never leaving the high-determinism band across the top. SQL is far more abstract than assembly, yet both do exactly and only what you specify. That's the through-line: <em class="hl">more abstraction, same predictability.</em></p>
+  <p>Intentional programming is the first genuine break in the pattern. It lunges further right than anything before it <em>and</em> drops out of the deterministic band into the bottom-right — "expressive and emergent." It bought a historic leap in abstraction and expressiveness by <strong>spending determinism</strong>. Notice the bottom-left stays empty: nobody wants a language that is both low-level <em>and</em> unpredictable — the entire point of surrendering determinism is to buy abstraction in return. This reframes the loop, the tests, and the harness not as nice-to-haves but as <strong>the toll you pay to operate safely in the bottom-right quadrant.</strong></p>
+
+  <h2 id="meta">What a paradigm is — and where this one sits</h2>
+  <p>Before slotting intentional programming into the family, it helps to be precise about what a paradigm actually is. A paradigm is <strong>not a language or a tool</strong> — you can't build anything with one. It's a set of ideas and conventions about how to structure a program. And paradigms are <strong>not mutually exclusive</strong>: most modern languages are multi-paradigm — Python and JavaScript happily mix object-oriented, functional, and declarative styles in the same file. Classically these styles form a family tree with two great branches — <em>imperative</em> (say <em>how</em>) and <em>declarative</em> (say <em>what</em>):</p>
+
+  <div class="tree">
+    <div class="meta"><b>Intentional / Agentic — you express intent</b><span>a meta-paradigm: the agent emits code in the paradigms below, often several at once</span></div>
+    <div class="fanlabel">↓ compiles your intent into any of these ↓</div>
+    <div class="cols">
+      <div class="fam imp">
+        <div class="fhead">IMPERATIVE — say <em>how</em></div>
+        <div class="leaves">
+          <div class="leaf">Procedural<span>C, Fortran</span></div>
+          <div class="leaf">Object-Oriented<span>Java, C++, Python</span></div>
+        </div>
+      </div>
+      <div class="fam dec">
+        <div class="fhead">DECLARATIVE — say <em>what</em></div>
+        <div class="leaves">
+          <div class="leaf">Functional<span>Haskell, Lisp</span></div>
+          <div class="leaf">Logic / Database<span>SQL, Prolog</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p>Here's where intentional programming fits — and it isn't simply a sixth leaf on the tree. Because you specify intent and a reasoning engine chooses the implementation, it sits <em>above</em> the tree as a kind of <strong>meta-paradigm</strong>: from one natural-language request the agent can emit procedural, object-oriented, functional, or declarative code — and routinely blends them in a single artifact. (That's exactly what the guess-a-number task below shows: one description, rendered five different ways.) It doesn't replace the older paradigms; it <em>orchestrates</em> them.</p>
+
+  <p>This also explains why it feels like the natural endpoint of a decades-long trend. Declarative programming was always described as "hiding away complexity and bringing programming closer to human thinking" — you order the dish and let the chef decide how to cook it, in the familiar restaurant analogy. Intentional programming pushes that to its limit: the "what" is now plain human language, and essentially <em>all</em> of the "how" — across every layer and paradigm — is hidden. And echoing the old wisdom that there is no single best paradigm, the right move is still to fit the paradigm to the problem; the difference is that now you can ask for it in words instead of hand-coding it.</p>
+
+  <h2 id="steering">From instructing to steering</h2>
+  <p>The clearest way to see the shift is to place it on that same axis. Imperative programming makes you specify the <em>how</em>, step by step. Declarative programming lets you specify the <em>what</em> and hands the <em>how</em> to a fixed engine. Intentional programming lets you specify intent in natural language, hands the <em>how</em> to a <em>reasoning</em> engine, and then — crucially — lets you and the engine <em class="hl">converge</em> on the result together.</p>
+  <p>So the programmer's job changes shape. Less "how do I implement this," more "what exactly do I want, and is this it?" The scarce skills become: <strong>describing intent precisely, recognizing when a result is right, and knowing which correction moves the system toward the goal.</strong> You stop being the person who types the solution and become the person who defines and steers it.</p>
+
+  <h2 id="new">What actually makes it new</h2>
+  <p>Three properties separate this from classical declarative programming. They matter because two are strengths and one is the weakness the whole workflow is built to manage.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="num">Property 1</div>
+      <h4>Multimodal intent</h4>
+      <p>The spec isn't restricted to text. A screenshot, a voice memo, a sketch, an error log, or an example are all valid ways to express what you want. "Chat" undersells this — the point is <em>intent in the most natural form</em>.</p>
+    </div>
+    <div class="card">
+      <div class="num">Property 2 · the risk</div>
+      <h4>The "how" is inferred</h4>
+      <p>Unlike a deterministic query planner, the engine <em>reasons</em>. The mapping from intent to implementation is probabilistic — sometimes better than you'd have specified, sometimes wrong. A genuinely different relationship to the machine.</p>
+    </div>
+    <div class="card">
+      <div class="num">Property 3 · the fix</div>
+      <h4>Correctness by convergence</h4>
+      <p>You rarely specify perfectly upfront. You describe → observe → test → correct → repeat. The spec and the artifact <em>co-evolve</em>. This is what compensates for the non-determinism of Property 2.</p>
+    </div>
+  </div>
+
+  <h2 id="loop">The loop is the paradigm</h2>
+  <p>Reframe the act of programming from a linear "write instructions" into a four-move cycle. The programmer's job shifts from <em>authoring instructions</em> to <em>articulating intent and judging outcomes</em>.</p>
+
+  <div class="loopbox">
+    <svg viewBox="0 0 720 170" role="img" aria-label="The intent loop: Express intent, Generate, Evaluate, Refine, looping back.">
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#7c3aed"></path>
+        </marker>
+      </defs>
+      <g font-family="inherit" font-size="14" font-weight="700" text-anchor="middle">
+        <rect x="10"  y="45" width="150" height="52" rx="12" fill="#f0f7ff" stroke="#1f6feb" stroke-width="1.5"></rect>
+        <text x="85" y="68" fill="#1f6feb">1 · Express</text>
+        <text x="85" y="85" fill="#5b6470" font-size="11" font-weight="500">intent (any medium)</text>
+
+        <rect x="195" y="45" width="150" height="52" rx="12" fill="#f6f0ff" stroke="#7c3aed" stroke-width="1.5"></rect>
+        <text x="270" y="68" fill="#7c3aed">2 · Generate</text>
+        <text x="270" y="85" fill="#5b6470" font-size="11" font-weight="500">agent proposes</text>
+
+        <rect x="380" y="45" width="150" height="52" rx="12" fill="#fff5f0" stroke="#c2410c" stroke-width="1.5"></rect>
+        <text x="455" y="68" fill="#c2410c">3 · Evaluate</text>
+        <text x="455" y="85" fill="#5b6470" font-size="11" font-weight="500">run · test · look</text>
+
+        <rect x="565" y="45" width="150" height="52" rx="12" fill="#f0fbf4" stroke="#0f9d58" stroke-width="1.5"></rect>
+        <text x="640" y="68" fill="#0f9d58">4 · Refine</text>
+        <text x="640" y="85" fill="#5b6470" font-size="11" font-weight="500">correct in words</text>
+      </g>
+      <g stroke="#7c3aed" stroke-width="2" fill="none">
+        <line x1="162" y1="71" x2="191" y2="71" marker-end="url(#arrow)"></line>
+        <line x1="347" y1="71" x2="376" y2="71" marker-end="url(#arrow)"></line>
+        <line x1="532" y1="71" x2="561" y2="71" marker-end="url(#arrow)"></line>
+      </g>
+      <path d="M640,99 L640,135 L85,135 L85,99" stroke="#7c3aed" stroke-width="2" fill="none" stroke-dasharray="5,4" marker-end="url(#arrow)"></path>
+      <text x="362" y="152" text-anchor="middle" font-size="11" fill="#8b98a5" font-style="italic">intent sharpens with every pass</text>
+    </svg>
+  </div>
+
+  <h2 id="unlocks">What the paradigm uniquely unlocks</h2>
+  <p>Beyond the loop itself, four capabilities appear that no earlier paradigm offered together. These are the parts that feel like a genuine change in kind, not just degree.</p>
+
+  <div class="unlock">
+    <span class="tag">Unlock 1 · Polyglot by default</span>
+    <h3>One intent, many tongues</h3>
+    <p>A single expressed demand can fan out across the entire stack at once — Python for the logic, SQL for the query, HTML and CSS for the surface, a REST call to a third-party API, a shell script to wire it together. You ask one question; five languages and three services answer it, already stitched into a working whole. The <em class="hl">polyglot tax</em> — the mental cost of constantly re-compiling your brain into another syntax and swallowing the friction between layers — is absorbed by the agent.</p>
+    <div class="stack">
+      <div class="layer" style="background:#3b82f6;">Python</div>
+      <div class="layer" style="background:#0891b2;">SQL</div>
+      <div class="layer" style="background:#c2410c;">HTML</div>
+      <div class="layer" style="background:#7c3aed;">CSS</div>
+      <div class="layer" style="background:#0f9d58;">REST&nbsp;API</div>
+      <div class="layer" style="background:#64748b;">shell</div>
+    </div>
+    <div class="analogy">
+      <span class="lbl">Analogy · the film director</span>
+      <p>A director says "make this scene feel tense and rainy at dusk." The cinematographer, gaffer, colorist, sound designer, and composer each translate that one sentence into their own technical craft — simultaneously — and it comes out as a single coherent scene. You never learned to grade color or rig a boom mic. You expressed the vision; the departments spoke their own languages. Intent programming is directing: one demand, many trades, one coherent cut.</p>
+    </div>
+  </div>
+
+  <div class="unlock">
+    <span class="tag">Unlock 2 · Distributed cognition</span>
+    <h3>Not one mind — a swarm</h3>
+    <p>Classical programming is bottlenecked by a single human working memory: one person, one problem in focus, one mental stack at a time. Intentional programming attacks the challenge with <em>many contexts and agents at once</em> — one drafting the schema while another reasons about the UI while another checks the edge cases. The cognition is parallel and distributed, and you sit at the head of the table synthesizing, not carrying every thread yourself.</p>
+    <div class="analogy">
+      <span class="lbl">Analogy · the situation room &amp; the orchestra</span>
+      <p>Instead of one analyst working a problem sequentially, imagine a war room where specialists hit it from every angle at the same time — and you're the one at the head of the table deciding which threads to pull. Or an orchestra: one score, many instruments sounding together. You conduct; you don't play every part. The lone programmer was a soloist. Here you've become a conductor.</p>
+    </div>
+  </div>
+
+  <div class="unlock">
+    <span class="tag">Unlock 3 · It teaches you back</span>
+    <h3>The loop that makes <em>you</em> smarter</h3>
+    <p>The mechanism doesn't only produce something new and useful — it <em class="hl">teaches the person steering it</em>. Because the agent often solves a problem in a way you wouldn't have, every pass exposes you to unfamiliar libraries, patterns, and techniques. You walk away from a build knowing more than you did, with a wider sense of how a problem <em>could</em> be solved. The artifact is the output; the education is the byproduct — and often the more durable one.</p>
+    <div class="analogy">
+      <span class="lbl">Analogy · the master craftsman narrating</span>
+      <p>Copy-pasting a fix from a forum hands you a patch and teaches you nothing. Working the loop is more like apprenticing beside a senior who narrates every decision as they make it: you get the deliverable <em>and</em> the reasoning. It's a flywheel — better questions produce better answers, which teach you to ask better questions. The paradigm is generative of skill, not just of software.</p>
+    </div>
+  </div>
+
+  <div class="unlock">
+    <span class="tag">Unlock 4 · Many human tongues</span>
+    <h3>Any language — and the culture inside it</h3>
+    <p>Intent isn't tied to English. You can express what you want in French, German, Japanese, Arabic — or blend several in the same prompt. Beyond sheer convenience, this carries a subtler benefit: every language encodes its own idioms, defaults, and cultural framings, so the tongue you think in can nudge both the solution and its tone. Describing a problem in your mother tongue often sharpens the intent itself, and asking across languages lets you pull in more than one cultural perspective at once.</p>
+    <div class="analogy">
+      <span class="lbl">Analogy · the multilingual design team</span>
+      <p>It's like briefing a team where each member thinks in a different language and brings their own instincts. Ask in English and you get one set of defaults; ask in Japanese and the politeness and formality shift; describe it in your own language and you simply express yourself more precisely. Same brief, a richer set of perspectives.</p>
+    </div>
+  </div>
+
+  <h2 id="harness">Harnessing the loop: the hidden variable</h2>
+  <p>Here's what "chat programming" conceals entirely: <strong>output quality is not a property of the paradigm — it's a property of the model and the harness around it.</strong> The harness is the scaffolding that turns a one-shot text generator into a converging loop. It gives the model <em>eyes</em> (read errors, run tests, see screenshots), <em>hands</em> (edit files, execute commands), and <em>discipline</em> (plan, verify, retry).</p>
+
+  <p>This is why the same model feels like a different tool depending on where you run it. In 2026 this became its own discipline — <em>harness engineering</em> — after a widely-cited teardown estimated roughly <strong>98% of a leading coding agent is the harness, not the model</strong>. The model is the engine; the harness is the entire car.</p>
+
+  <div class="eq">
+    <span class="cmt"># the two things chat programming hides</span><br>
+    <span class="var">quality</span> <span class="op">≈</span> f( intent clarity <span class="op">×</span> model capability <span class="op">×</span> <span class="var">harness quality</span> <span class="op">×</span> iteration richness )<br><br>
+    <span class="var">cost</span> &nbsp;&nbsp;&nbsp;<span class="op">≈</span> tokens per turn <span class="op">×</span> number of turns <span class="op">×</span> model price<br>
+    <span class="cmt"># stronger model + richer loop → more $ and latency, fewer turns to converge</span>
+  </div>
+
+  <div class="callout tip">
+    <p><strong>The quality / cost / latency triangle.</strong> Because the "how" is inferred and correctness is reached by iteration, you're always picking a point on a triangle. Cheap one-shots are cheap precisely because they skip the loop. A strong model in a deep harness costs more per turn and is slower — but converges in fewer turns and reaches places a weak setup never will. There is no universal "best"; there's only the right point for the stakes of the task.</p>
+  </div>
+
+  <p>One more thing the popular name hides: the probabilistic core — the reasoning engine behind Property 2 — is an <strong>LLM, and every LLM is the product of a particular lab</strong> that trained and aligned it. Claude comes from Anthropic, GPT and Codex from OpenAI, Gemini from Google, and so on. "Choosing the model" is therefore also choosing a lab's judgment about how it should reason, refuse, and behave — so two harnesses running different labs' models can answer the very same intent quite differently.</p>
+
+  <p>Which leads to the blunt, practical truth: <strong>the same paradigm and the same prompt — run through a different IDE, CLI, or harness, or backed by a different model — can produce vastly different quality.</strong> The paradigm is constant; the results are not. So it helps to see the landscape of surfaces you can actually run this on.</p>
+
+  <h3 id="tooling" style="scroll-margin-top:76px;">The tooling quadrant: ease vs capability</h3>
+  <p>Map the surfaces by <strong>ease of use</strong> against <strong>raw capability</strong>, and note how each one reaches you across devices — phone, cloud, desktop, wearable.</p>
+
+  <div class="chartbox">
+    <svg viewBox="0 0 780 580" role="img" aria-label="A 2x2 quadrant of vibe-coding surfaces plotted by ease of use (x-axis) and capability (y-axis), with the devices each runs on.">
+      <defs>
+        <marker id="frontier" markerWidth="11" markerHeight="11" refX="7" refY="3.2" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3.2 L0,6.4 Z" fill="#7c3aed"></path>
+        </marker>
+      </defs>
+
+      <!-- caption above plot -->
+      <text x="415" y="30" font-family="inherit" font-size="13" fill="#7c3aed" font-weight="700" text-anchor="middle">Same paradigm, different surface — ease of use vs capability.</text>
+      <text x="415" y="49" font-family="inherit" font-size="13" fill="#7c3aed" font-weight="700" text-anchor="middle">Each new model version pushes the frontier toward "powerful &amp; effortless" — non-linearly.</text>
+
+      <!-- quadrant tints -->
+      <rect x="90"  y="68"  width="325" height="192" fill="#eaf2ff"></rect>
+      <rect x="415" y="68"  width="325" height="192" fill="#eafbf1"></rect>
+      <rect x="415" y="260" width="325" height="192" fill="#f4ecff"></rect>
+      <rect x="90"  y="260" width="325" height="192" fill="#f1f2f4"></rect>
+
+      <!-- plot border + center cross -->
+      <rect x="90" y="68" width="650" height="384" fill="none" stroke="#d7dbe0" stroke-width="1.5"></rect>
+      <line x1="415" y1="68" x2="415" y2="452" stroke="#c3c9d0" stroke-width="1.2" stroke-dasharray="5,5"></line>
+      <line x1="90" y1="260" x2="740" y2="260" stroke="#c3c9d0" stroke-width="1.2" stroke-dasharray="5,5"></line>
+
+      <!-- quadrant labels -->
+      <g font-family="inherit" font-size="12.5" text-anchor="middle">
+        <text x="242" y="250" font-weight="700" fill="#3f6ab0" opacity="0.72">Expert power tools</text>
+        <text x="600" y="96"  font-weight="700" fill="#2f8f5b" opacity="0.85">Powerful &amp; effortless — the goal</text>
+        <text x="512" y="432" font-weight="700" fill="#7c3aed" opacity="0.72">Casual &amp; accessible</text>
+        <text x="242" y="432" font-style="italic" fill="#9aa2ac">the dead corner</text>
+      </g>
+
+      <!-- frontier arrow (outward, non-linear) -->
+      <path d="M300,382 C 450,300 580,195 690,112" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-dasharray="2,6" stroke-linecap="round" marker-end="url(#frontier)" opacity="0.6"></path>
+
+      <!-- data points -->
+      <g font-family="inherit">
+        <circle cx="285" cy="115" r="7" fill="#6d28d9" stroke="#fff" stroke-width="2"></circle>
+        <text x="300" y="119" font-size="13" font-weight="700" fill="#5b21b6">Agentic CLI</text>
+
+        <circle cx="389" cy="142" r="7" fill="#7c3aed" stroke="#fff" stroke-width="2"></circle>
+        <text x="404" y="146" font-size="13" font-weight="700" fill="#6d28d9">Cloud agents</text>
+
+        <circle cx="460" cy="169" r="7" fill="#1f6feb" stroke="#fff" stroke-width="2"></circle>
+        <text x="475" y="173" font-size="13" font-weight="700" fill="#1a5fc4">IDE assistant</text>
+
+        <circle cx="558" cy="226" r="7" fill="#0891b2" stroke="#fff" stroke-width="2"></circle>
+        <text x="573" y="230" font-size="13" font-weight="700" fill="#0e7490">App / UI builders</text>
+
+        <circle cx="623" cy="291" r="7" fill="#0f9d58" stroke="#fff" stroke-width="2"></circle>
+        <text x="608" y="295" font-size="13" font-weight="700" fill="#0b7a44" text-anchor="end">Web chat</text>
+
+        <circle cx="694" cy="372" r="7" fill="#c2410c" stroke="#fff" stroke-width="2"></circle>
+        <text x="679" y="376" font-size="13" font-weight="700" fill="#9a3412" text-anchor="end">Mobile &amp; voice</text>
+      </g>
+
+      <!-- axis titles -->
+      <text x="415" y="498" font-size="13.5" font-weight="700" fill="#1c2024" text-anchor="middle">Ease of use  →</text>
+      <text x="96" y="478" font-size="11" fill="#8b98a5" text-anchor="start">steep learning curve</text>
+      <text x="734" y="478" font-size="11" fill="#8b98a5" text-anchor="end">frictionless · anyone</text>
+      <text x="30" y="260" font-size="13.5" font-weight="700" fill="#1c2024" text-anchor="middle" transform="rotate(-90 30 260)">Capability &amp; power  →</text>
+      <text x="56" y="104" font-size="11" fill="#8b98a5" text-anchor="middle" transform="rotate(-90 56 104)">powerful · autonomous</text>
+      <text x="56" y="418" font-size="11" fill="#8b98a5" text-anchor="middle" transform="rotate(-90 56 418)">limited</text>
+    </svg>
+    <div class="legend">
+      <span><i style="background:#1f6feb;"></i>D · Desktop</span>
+      <span><i style="background:#7c3aed;"></i>C · Cloud</span>
+      <span><i style="background:#0891b2;"></i>P · Phone</span>
+      <span><i style="background:#c2410c;"></i>W · Wearable</span>
+    </div>
+    <table class="devtable">
+      <thead><tr><th>Surface</th><th>Examples</th><th>Runs on</th></tr></thead>
+      <tbody>
+        <tr><td>Agentic CLI</td><td><em>Claude Code, Codex CLI, Gemini CLI</em></td><td><span class="dev d">D</span><span class="dev c">C</span></td></tr>
+        <tr><td>Cloud / async agents</td><td><em>background coding agents</em></td><td><span class="dev c">C</span><span class="dev d">D</span><span class="dev p">P</span></td></tr>
+        <tr><td>IDE assistant</td><td><em>Cursor, Copilot, Windsurf</em></td><td><span class="dev d">D</span></td></tr>
+        <tr><td>App / UI builders</td><td><em>v0, Bolt, Lovable, Replit</em></td><td><span class="dev d">D</span><span class="dev c">C</span></td></tr>
+        <tr><td>Web chat</td><td><em>Claude.ai, ChatGPT, Gemini</em></td><td><span class="dev d">D</span><span class="dev p">P</span><span class="dev c">C</span></td></tr>
+        <tr><td>Mobile &amp; voice / wearable</td><td><em>phone apps, voice assistants</em></td><td><span class="dev p">P</span><span class="dev w">W</span><span class="dev c">C</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>And none of this sits still. Each new model version — usually the latest — <strong>resets the ceiling</strong>, adding capabilities that didn't exist a release ago. The frontier isn't advancing in a straight line; it lurches outward in jumps, which is why a workflow that felt impossible last quarter can be routine this one. Treat the quadrant as a snapshot of a frontier in motion, drifting steadily toward "powerful <em>and</em> effortless."</p>
+
+  <h2 id="tension">The honest tension</h2>
+  <p>There's a real cost baked into all of this, and it's worth naming plainly. Because the "how" is inferred and correctness is reached by convergence, you trade <strong>precision and determinism</strong> for <strong>expressiveness and speed</strong>.</p>
+  <div class="callout tension">
+    <p>Declarative code does <em>exactly and only</em> what it says. Intentional code does <em>approximately what you meant</em> — until you've steered it into place. That's why testing isn't decoration in this paradigm; it's structural. <strong>Testing is the mechanism that substitutes for the determinism you gave up.</strong> The loop and the tests are not add-ons to intentional programming — they are the thing that makes it safe to trust at all. (It's the toll for the bottom-right quadrant.)</p>
+  </div>
+
+  <h2 id="engineering">Programming vs. software engineering — and where the speed goes</h2>
+  <p>A distinction worth drawing sharply, because the paradigm hits the two halves very differently. <strong>Programming</strong> is solving a problem by writing code and running it. <strong>Software engineering</strong> is collaborating to design and maintain a durable system that keeps evolving long after the first author has moved on. Programming is <em>part</em> of software engineering — but only a part. (The framing is Google's, from their August 2026 argument that language choice matters <em>more</em> in the AI era, not less.)</p>
+
+  <p>Here's the twist. Intentional programming collapses the cost of <em>programming</em> — the writing — to almost nothing: a capable agent emits hundreds of lines of valid code in seconds. But it barely touches <em>software engineering</em>. So the bottleneck of the whole lifecycle moves: <em class="hl">from generation to verification.</em> For decades a language's productivity was measured by how easy it was to write. Now that writing is nearly free, what matters is how easy the result is to <strong>read, review, verify, and maintain.</strong></p>
+
+  <div class="shift">
+    <div class="barrow">
+      <span class="barlabel">Before AI</span>
+      <div class="bar">
+        <div class="seg" style="width:45%; background:#1f6feb;">Write code 45%</div>
+        <div class="seg" style="width:25%; background:#c2410c;">Review 25%</div>
+        <div class="seg" style="width:30%; background:#7c3aed;">Design &amp; maintain 30%</div>
+      </div>
+    </div>
+    <div class="barrow">
+      <span class="barlabel">With AI</span>
+      <div class="bar">
+        <div class="seg" style="width:8%; background:#1f6feb;"></div>
+        <div class="seg" style="width:42%; background:#c2410c;">Review &amp; verify 42%</div>
+        <div class="seg" style="width:50%; background:#7c3aed;">Design &amp; maintain 50%</div>
+      </div>
+    </div>
+    <div class="legend2">
+      <span><i style="background:#1f6feb;"></i>Write / generate code</span>
+      <span><i style="background:#c2410c;"></i>Review &amp; verify</span>
+      <span><i style="background:#7c3aed;"></i>Design &amp; maintain (engineering)</span>
+    </div>
+    <p class="muted" style="font-size:11.5px; margin:6px 0 0;">Illustrative. AI shrinks writing to a sliver; the human bottleneck shifts to reviewing, verifying, and the broader engineering AI can't own.</p>
+  </div>
+
+  <p>This is why "fast with AI" is a mirage if you measure it at the keyboard. The generation step got orders of magnitude faster; the human review-and-verify step did not. Speed at the wrong stage just piles unreviewed code against the real constraint. Worse, autonomous agents can open hundreds of pull requests and refactor whole services on a whim — so the danger isn't slow typing, it's <strong>architectural drift</strong> accumulating faster than anyone can review it.</p>
+
+  <div class="callout tip">
+    <p><strong>AI is a teammate — a talented maverick that needs guardrails.</strong> It writes fast but has a narrow view of the whole system, so humans still own the parts that are pure software engineering: the architecture, the service boundaries, the reliability and security of production. And the guardrails that make the maverick safe are exactly the deterministic tools — static types, a compiler, formatters, tests, fuzzing — that let the agent <em>self-correct before a human ever looks</em>. Static types plus a fast compile give the tightest iteration loop; tellingly, the languages that were hardest for humans (strict, verbose, compiled) turn out to be the easiest for agents.</p>
+  </div>
+
+  <p>Notice where this lands on the quadrant. The agentic paradigm dove into the low-determinism corner; these guardrails are precisely how you claw determinism back — the toll for living in the bottom-right. Which yields a genuinely counterintuitive conclusion: <strong>as you write less code, your choice of language and tooling matters more, not less</strong> — because that choice now governs the review, verification, and maintenance surface, not the typing surface. Google's case is that Go fits unusually well (read-first clarity, static types, one canonical format, fast compile, never-break compatibility); the deeper, language-agnostic point is that <em>deterministic, uniform, well-tooled</em> stacks absorb high-velocity agent output best.</p>
+
+  <h2 id="who">Who's actually good at this</h2>
+  <p>There's no single "best person" — but there's a clear dividing line, and it maps exactly onto Property 3. The people who ship real software with this paradigm are the ones who <em>master the loop and the harness</em>. The people producing throwaway demos are the ones who skip it.</p>
+
+  <div>
+    <div class="person">
+      <div class="badge" style="background:#1f6feb;">AK</div>
+      <div class="body">
+        <strong>Andrej Karpathy</strong> <span class="pill">named it</span>
+        <p>Coined "vibe coding" (Feb 2025) and, earlier, "the hottest new programming language is English." Crucially, he framed pure vibe coding — <em>"I Accept All always, I don't read the diffs"</em> — as fit for <em>"throwaway weekend projects,"</em> not production. He named the extreme, not the discipline.</p>
+      </div>
+    </div>
+    <div class="person">
+      <div class="badge" style="background:#7c3aed;">SW</div>
+      <div class="body">
+        <strong>Simon Willison</strong> <span class="pill">the discipline</span>
+        <p>Drew the defining line: if an LLM wrote every line but you <em>reviewed, tested, and understood it</em>, "that's not vibe coding — that's using an LLM as a typing assistant." His 2026 term <strong>"vibe engineering"</strong> is this paradigm done properly: agents inside a real process with tests, review, source control, and planning.</p>
+      </div>
+    </div>
+    <div class="person">
+      <div class="badge" style="background:#0f9d58;">KV</div>
+      <div class="body">
+        <strong>Kenton Varda / Cloudflare</strong> <span class="pill">receipts</span>
+        <p>Built a production OAuth library largely through an AI agent and <em>committed the prompts alongside the code</em> — a public, auditable example of the loop used with engineering rigor rather than blind acceptance.</p>
+      </div>
+    </div>
+    <div class="person">
+      <div class="badge" style="background:#c2410c;">PL</div>
+      <div class="body">
+        <strong>Pieter Levels (@levelsio)</strong> <span class="pill">velocity</span>
+        <p>The archetype of shipping and monetizing fast with AI (e.g. a browser flight-sim that went viral). Proof the paradigm's speed is real — and, in the discourse, a lightning rod for the fragility of skipping the loop on anything that has to last.</p>
+      </div>
+    </div>
+  </div>
+  <p class="muted" style="font-size:13.5px;">Named examples are illustrative and drawn from public writing through 2025–2026; the field moves fast, so treat specifics as a snapshot, not a leaderboard.</p>
+
+  <h2 id="yolo">Why the YOLO approach misses the point</h2>
+  <p>"YOLO" — one-shot the prompt, accept everything, don't test, don't steer — looks like the purest expression of the paradigm. It's actually the opposite. It throws away the one thing that makes the paradigm work.</p>
+
+  <div class="callout warn">
+    <p><strong>The core problem:</strong> Property 2 (the "how" is inferred, so output is non-deterministic) is a liability. Property 3 (convergence through the loop) is the <em>only</em> thing that pays it off. YOLO keeps Property 2 and discards Property 3 — so you get maximum exposure to the weakness with none of the mitigation. On the quadrant, it's trying to live in the bottom-right without paying the toll.</p>
+    <p style="margin-top:12px;">Without evaluation and refinement you're not really using a reasoning loop at all. You're back to <em>hoping a probabilistic generator got it right the first time</em> — which reintroduces the determinism problem of the old world without inheriting any of its determinism. Worse, it forfeits Unlock 3 entirely: skip the loop and you learn nothing from the build. That's why Karpathy scoped it to throwaway projects and why Willison renames the serious version "vibe engineering." The value was never in the generating. It was always in the loop.</p>
+  </div>
+
+  <h2 id="example">One task, every paradigm: guess a number (1–10)</h2>
+  <p>The same tiny program — pick a secret number from 1 to 10, keep guessing until you hit it — written the way each paradigm would. Watch how much "how" you shed moving down the list, until the last one, where the "source code" is simply intent in plain human language.</p>
+
+  <div class="example">
+    <div class="head"><span class="dot" style="background:#64748b;"></span><h4>Machine &amp; Assembly</h4><span class="lang">imperative · you manage registers</span></div>
+    <pre class="code">; x86-64 (NASM) — core compare loop; RNG + I/O syscalls elided
+; rbx = secret (1..10)      rax = the player's guess
+guess_loop:
+    call    read_guess        ; returns guess in rax
+    cmp     rax, rbx
+    je      .win              ; guess == secret
+    jl      .too_low          ; guess &lt; secret
+    mov     rdi, msg_high     ; else guess &gt; secret
+    call    print
+    jmp     guess_loop
+.too_low:
+    mov     rdi, msg_low
+    call    print
+    jmp     guess_loop
+.win:
+    mov     rdi, msg_win
+    call    print
+    ret</pre>
+    <p class="note">You steer registers and branches by hand; even reading a number is a syscall you wire yourself. (I/O and RNG abridged — in full it's ~80 lines.)</p>
+  </div>
+
+  <div class="example">
+    <div class="head"><span class="dot" style="background:#0891b2;"></span><h4>Procedural / C</h4><span class="lang">imperative · readable steps</span></div>
+    <pre class="code">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+
+int main(void) {
+    srand(time(NULL));
+    int secret = rand() % 10 + 1, guess;
+    do {
+        printf("Guess (1-10): ");
+        scanf("%d", &amp;guess);
+        if (guess &gt; secret)      puts("Too high");
+        else if (guess &lt; secret) puts("Too low");
+    } while (guess != secret);
+    puts("Correct!");
+}</pre>
+    <p class="note">Still every step by hand, but in human-readable form — a compiler handles the machine code.</p>
+  </div>
+
+  <div class="example">
+    <div class="head"><span class="dot" style="background:#1f6feb;"></span><h4>Object-Oriented / Python</h4><span class="lang">state wrapped in an object</span></div>
+    <pre class="code">import random
+
+class GuessGame:
+    def __init__(self, lo=1, hi=10):
+        self.secret = random.randint(lo, hi)
+
+    def guess(self, n):
+        if n == self.secret: return "correct"
+        return "high" if n &gt; self.secret else "low"
+
+game = GuessGame()
+while True:
+    result = game.guess(int(input("Guess (1-10): ")))
+    if result == "correct":
+        print("Correct!"); break
+    print("Too", result)</pre>
+    <p class="note">The secret becomes state inside an object; the guessing behavior hangs off it.</p>
+  </div>
+
+  <div class="example">
+    <div class="head"><span class="dot" style="background:#0f9d58;"></span><h4>Functional / Haskell</h4><span class="lang">recursion · pattern matching</span></div>
+    <pre class="code">import System.Random (randomRIO)
+
+main :: IO ()
+main = randomRIO (1, 10) &gt;&gt;= play
+
+play :: Int -&gt; IO ()
+play secret = do
+  putStr "Guess (1-10): "
+  guess &lt;- readLn
+  case compare guess secret of
+    EQ -&gt; putStrLn "Correct!"
+    GT -&gt; putStrLn "Too high" &gt;&gt; play secret
+    LT -&gt; putStrLn "Too low"  &gt;&gt; play secret</pre>
+    <p class="note">No mutable loop — the game recurses, and matching on <code>compare</code> replaces the explicit branches.</p>
+  </div>
+
+  <div class="example">
+    <div class="head"><span class="dot" style="background:#0d9488;"></span><h4>Declarative / SQL</h4><span class="lang">describe the result · engine computes</span></div>
+    <pre class="code">-- 1) The rule as a query: for any secret + guess, declare the verdict
+SELECT CASE
+         WHEN guess = secret THEN 'correct'
+         WHEN guess &gt; secret THEN 'too high'
+         ELSE 'too low'
+       END AS verdict
+FROM (SELECT 7 AS secret, 5 AS guess) AS t;      -- -&gt; 'too low'
+
+-- 2) Play a whole game declaratively: a recursive CTE binary-searches 1..10
+--    (integer division assumed — e.g. Postgres / SQLite / SQL Server)
+WITH RECURSIVE play(lo, hi, guess, secret, step) AS (
+    SELECT 1, 10, (1 + 10) / 2, 7, 1             -- secret is 7 (any 1..10)
+  UNION ALL
+    SELECT CASE WHEN guess &lt; secret THEN guess + 1 ELSE lo END,
+           CASE WHEN guess &gt; secret THEN guess - 1 ELSE hi END,
+           CASE WHEN guess &lt; secret THEN (guess + 1 + hi) / 2
+                WHEN guess &gt; secret THEN (lo + guess - 1) / 2 END,
+           secret, step + 1
+    FROM play
+    WHERE guess &lt;&gt; secret
+)
+SELECT step, guess,
+       CASE WHEN guess = secret THEN 'correct'
+            WHEN guess &gt; secret THEN 'too high'
+            ELSE 'too low' END AS verdict
+FROM play ORDER BY step;
+-- step | guess | verdict
+--   1  |   5   | too low
+--   2  |   8   | too high
+--   3  |   6   | too low
+--   4  |   7   | correct</pre>
+    <p class="note"><strong>Possible — but with an honest limit, and the limit is the point.</strong> Pure SQL describes a <em>result set</em>, not an interactive session: it has no built-in way to prompt you, wait, read a guess, and loop. So the <em>human-guessing</em> loop isn't expressible in pure declarative SQL — that needs the application layer to feed guesses, or a procedural extension (PL/pgSQL, T-SQL) with real loops, which is no longer purely declarative. What SQL <em>does</em> do beautifully is declare the game's logic: query&nbsp;1 states the verdict rule for any secret/guess pair, and the recursive CTE in query&nbsp;2 plays an entire game by binary search — you never write a loop; you declare how each state follows from the last and the engine iterates to the answer. That is the declarative spirit exactly: say <em>what</em> the result is and let the engine find the <em>how</em>.</p>
+  </div>
+
+  <div class="example">
+    <div class="head"><span class="dot" style="background:#7c3aed;"></span><h4>Intentional / Agentic (vibe coding)</h4><span class="lang">natural language · intent is the source</span></div>
+    <p class="note" style="margin-top:0;">No syntax to write — you describe the outcome and steer. And the intent needn't be in English; use any human language, or several at once:</p>
+    <div class="intent"><span class="lg">English</span>Build a tiny game: pick a secret number from 1 to 10, let me guess over and over, tell me "too high" or "too low" each time, and congratulate me when I get it.</div>
+    <div class="intent"><span class="lg">Français</span>Crée un petit jeu : choisis un nombre secret entre 1 et 10, laisse-moi deviner, dis-moi « trop grand » ou « trop petit » à chaque essai, puis félicite-moi quand je trouve.</div>
+    <div class="intent"><span class="lg">Deutsch</span>Bau ein kleines Spiel: Wähle eine geheime Zahl von 1 bis 10, lass mich immer wieder raten, sag „zu hoch" oder „zu niedrig", und gratuliere mir, wenn ich sie errate.</div>
+    <p class="note">Each of these yields the same working app — in whatever stack you ask for (a Python script, a web page, a phone app), with none of the syntax above coming from you. The language you choose also colors the output: French and German nudge different politeness and phrasing defaults in the messages, and stating the problem in your mother tongue tends to sharpen the intent itself. Blend languages in one prompt to pull in several cultural perspectives at once.</p>
+    <p class="madewith"><strong>How this was made:</strong> this entire document — the text, the charts, the code samples, and the playable game below — was generated in <strong>Claude Desktop using Opus 4.8</strong>, steered through exactly the loop it describes.</p>
+  </div>
+
+  <div class="example">
+    <div class="head"><span class="dot" style="background:#7c3aed;"></span><h4>…and the app it produced: TypeScript</h4><span class="lang">live · runs in your browser</span></div>
+    <pre class="code">type Result = "correct" | "high" | "low";
+
+class GuessGame {
+  private secret: number;
+  constructor(lo = 1, hi = 10) {
+    this.secret = Math.floor(Math.random() * (hi - lo + 1)) + lo;
+  }
+  guess(n: number): Result {
+    if (n === this.secret) return "correct";
+    return n &gt; this.secret ? "high" : "low";
+  }
+}
+
+const game = new GuessGame();
+// wire game.guess(n) to the input below and show the result</pre>
+    <div class="game">
+      <div class="game-row">
+        <input id="tsGuess" type="number" min="1" max="10" placeholder="1–10" aria-label="Your guess, 1 to 10" />
+        <button id="tsGo" type="button">Guess</button>
+        <button id="tsNew" type="button" class="secondary">New game</button>
+      </div>
+      <p class="msg" id="tsMsg">I'm thinking of a number between 1 and 10. Take a guess!</p>
+      <p class="tries" id="tsTries"></p>
+    </div>
+    <p class="note">The block above is the TypeScript source; the widget is that exact logic (transpiled to JavaScript) running live. Same game as the four versions before it — but this one you steered into existence by describing it, not by writing the loop.</p>
+  </div>
+
+  <script>
+  (function () {
+    var secret, tries;
+    var input = document.getElementById('tsGuess');
+    var msg = document.getElementById('tsMsg');
+    var triesEl = document.getElementById('tsTries');
+    function newGame() {
+      secret = Math.floor(Math.random() * 10) + 1;
+      tries = 0;
+      msg.textContent = "I'm thinking of a number between 1 and 10. Take a guess!";
+      msg.style.color = '#2f2a3d';
+      triesEl.textContent = '';
+      input.value = '';
+      input.focus();
+    }
+    function go() {
+      var n = parseInt(input.value, 10);
+      if (isNaN(n) || n < 1 || n > 10) {
+        msg.textContent = 'Please enter a whole number from 1 to 10.';
+        msg.style.color = '#c2410c';
+        return;
+      }
+      tries++;
+      if (n === secret) {
+        msg.textContent = 'Correct! The number was ' + secret + '.';
+        msg.style.color = '#0b7a44';
+        triesEl.textContent = 'Solved in ' + tries + (tries === 1 ? ' guess.' : ' guesses.') + ' Press "New game" to play again.';
+      } else {
+        msg.textContent = n > secret ? 'Too high — go lower.' : 'Too low — go higher.';
+        msg.style.color = '#1a5fc4';
+        triesEl.textContent = 'Guesses so far: ' + tries;
+        input.select();
+      }
+    }
+    document.getElementById('tsGo').addEventListener('click', go);
+    document.getElementById('tsNew').addEventListener('click', newGame);
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+    newGame();
+  })();
+  </script>
+
+  <h2 id="memes">The paradigm, in memes</h2>
+  <p>Sticky lines for explaining the novelty and the benefits — the kind that survive a hallway conversation.</p>
+
+  <div class="memewall">
+    <div class="meme m1">
+      <p class="slogan">Describe the destination, not the route.</p>
+      <p class="gloss">You express intent; the agent infers the how.</p>
+    </div>
+    <div class="meme m2">
+      <p class="slogan">The compiler is a conversation.</p>
+      <p class="gloss">Natural language in, working software out — by dialogue.</p>
+    </div>
+    <div class="meme m3">
+      <p class="slogan">One prompt in, five languages out.</p>
+      <p class="gloss">Python, SQL, HTML, CSS, a REST call — from one demand.</p>
+    </div>
+    <div class="meme m4">
+      <p class="slogan">You're the director, not the crew.</p>
+      <p class="gloss">Cast the vision; the departments speak their own craft.</p>
+    </div>
+    <div class="meme m5">
+      <p class="slogan">Not one mind — a swarm.</p>
+      <p class="gloss">Many contexts hit the problem in parallel; you conduct.</p>
+    </div>
+    <div class="meme m6">
+      <p class="slogan">Build something, learn something.</p>
+      <p class="gloss">Every pass through the loop levels you up.</p>
+    </div>
+    <div class="meme m7">
+      <p class="slogan">The model's the engine. The harness is the car.</p>
+      <p class="gloss">Same model, different harness, wildly different results.</p>
+    </div>
+    <div class="meme m8">
+      <p class="slogan">YOLO keeps the risk and drops the loop.</p>
+      <p class="gloss">No test, no steer — just hoping the dice land right.</p>
+    </div>
+    <div class="meme m9">
+      <p class="slogan">AI programs. You engineer.</p>
+      <p class="gloss">Generation is cheap; design, review, and upkeep are the job.</p>
+    </div>
+    <div class="meme m10">
+      <p class="slogan">Writing got cheap. Reviewing is the bottleneck.</p>
+      <p class="gloss">The constraint moved from typing to verifying.</p>
+    </div>
+  </div>
+
+  <div class="oneliner">
+    <strong>In one sentence:</strong> Intentional programming is a paradigm where you specify software through <em>multimodal intent</em> and converge on the result through an <em>iterative feedback loop</em> with a reasoning agent — one demand fanning out across many languages and many parallel minds, where the model sets the ceiling, the harness closes the loop, the loop teaches you as it builds, and skipping the loop (YOLO) discards the very mechanism that makes the whole thing trustworthy.
+  </div>
+
+  <h2 id="sources">Sources &amp; further reading</h2>
+  <p>This framing synthesizes a few public pieces — orientation guides to the classic paradigms, plus recent arguments about what AI changes:</p>
+  <ul class="refs">
+    <li><strong>Google Developers Blog</strong> — <a href="https://developers.googleblog.com/why-go-is-an-ideal-language-for-ai-assisted-software-engineering/">Why Go is an Ideal Language for AI-Assisted Software Engineering</a> (Aug 2026): the shift of the bottleneck from writing to verification, and the programming-vs-software-engineering distinction.</li>
+    <li><strong>freeCodeCamp</strong> — <a href="https://www.freecodecamp.org/news/an-introduction-to-programming-paradigms/">Programming Paradigms – Paradigm Examples for Beginners</a> (German Cocca): what a paradigm is and isn't, and declarative programming as "hiding the how."</li>
+    <li><strong>DataCamp</strong> — <a href="https://www.datacamp.com/blog/introduction-to-programming-paradigms">An Introductory Guide to Different Programming Paradigms</a>: the restaurant/chef analogy and the "no single best paradigm" point.</li>
+    <li><strong>DEV Community</strong> — <a href="https://dev.to/favouritejome/the-world-of-programming-paradigms-3hbi">The World of Programming Paradigms</a> (Favourite Jome): the imperative-vs-declarative family tree.</li>
+    <li>Plus <strong>Andrej Karpathy</strong> (who coined "vibe coding," Feb 2025) and <strong>Simon Willison</strong> (who drew the "vibe engineering" line) for the practitioner framing used in the sections above.</li>
+  </ul>
+
+  <footer>A structured reflection · framing of the agentic / intentional programming paradigm · generated in Claude Desktop with Opus 4.8</footer>
+
+</div>
+</body>
+</html>
