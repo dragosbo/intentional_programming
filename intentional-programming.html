@@ -249,6 +249,8 @@
     <a href="#yolo">YOLO</a>
     <a href="#example">Example</a>
     <a href="#memes">Memes</a>
+    <a href="#infra">Infrastructure</a>
+    <a href="#compilation">Double Compilation</a>
     <a href="#sources">Sources</a>
   </nav>
 
@@ -973,6 +975,106 @@ const game = new GuessGame();
     <strong>In one sentence:</strong> Intentional programming is a paradigm where you specify software through <em>multimodal intent</em> and converge on the result through an <em>iterative feedback loop</em> with a reasoning agent — one demand fanning out across many languages and many parallel minds, where the model sets the ceiling, the harness closes the loop, the loop teaches you as it builds, and skipping the loop (YOLO) discards the very mechanism that makes the whole thing trustworthy.
   </div>
 
+  <h2 id="infra">Where the work runs — and what it costs</h2>
+  <p>Every paradigm has implied an infrastructure model. Assembly ran on one machine. Client-server split work across two. Cloud-native spread it across many behind an API. Intentional programming inherits all three and introduces a new dimension: <strong>where does the reasoning happen?</strong></p>
+
+  <h3>Three execution loci</h3>
+  <div class="cards">
+    <div class="card">
+      <div class="num">1</div>
+      <h4>Local</h4>
+      <p>Models run on your machine (Ollama, LM Studio). Zero network latency, full privacy, no per-token cost — but limited by your GPU/RAM. Works offline. Best for: prototyping, sensitive code, air-gapped environments.</p>
+    </div>
+    <div class="card">
+      <div class="num">2</div>
+      <h4>Dedicated Server</h4>
+      <p>A known remote machine you control (self-hosted, on-prem GPU cluster). Predictable costs, data stays in your perimeter, full audit trail. Best for: enterprises, regulated industries, steady workloads.</p>
+    </div>
+    <div class="card">
+      <div class="num">3</div>
+      <h4>Cloud API</h4>
+      <p>Frontier models via API (OpenAI, Anthropic, Google). Maximum capability, pay-per-token, your code leaves your machine. Best for: cutting-edge quality, burst workloads, rapid iteration.</p>
+    </div>
+  </div>
+
+  <h3>The cost landscape</h3>
+  <p>Intentional programming has a richer cost structure than previous paradigms. Traditional compilation costs electricity and time. Agentic "compilation" adds:</p>
+  <table class="devtable">
+    <thead><tr><th>Cost type</th><th>Local</th><th>Dedicated server</th><th>Cloud API</th></tr></thead>
+    <tbody>
+      <tr><td>Hardware / GPU</td><td>One-time ($300–$2000+)</td><td>Leased or purchased ($500–$3000/mo)</td><td>None (included in token price)</td></tr>
+      <tr><td>Per-token inference</td><td>$0 (electricity only)</td><td>$0.02–$0.06/hr amortized</td><td>$0.05–$30 per million tokens</td></tr>
+      <tr><td>Subscription</td><td>None</td><td>Hosting fees</td><td>$20–$200+/month per seat</td></tr>
+      <tr><td>Electricity</td><td>$5–$20/mo under load</td><td>Included in hosting</td><td>Included in token price</td></tr>
+      <tr><td>Model access</td><td>Open-weight only</td><td>Open-weight or licensed</td><td>Frontier models available</td></tr>
+      <tr><td>Rate limits</td><td>None</td><td>None</td><td>Yes — tier-dependent</td></tr>
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:12px;">The cost of generating one million tokens from a frontier model fell from ~$60 in 2020 to ~$0.05 by 2025 — a 1,200× decline in five years. No other technology in history has experienced a price collapse of this magnitude in this timeframe. Yet frontier reasoning models (long chains of thought, sub-agents) can still cost $20–$30 per million output tokens.</p>
+
+  <h3>Jurisdiction &amp; sovereignty</h3>
+  <div class="callout tension">
+    <p><strong>Not all models are available everywhere.</strong> When your "compiler" is a cloud API, your ability to program depends on legal geography:</p>
+    <p>• The <strong>EU AI Act</strong> (Regulation 2024/1689) classifies certain AI systems by risk level and imposes obligations on providers — some models may not be offered in EU jurisdictions if providers don't comply.<br>
+    • <strong>Data residency laws</strong> in 30+ countries require that code and data stay within national borders — your API call to a US-based model may violate local regulations.<br>
+    • <strong>Sanctions and export controls</strong> restrict model access in certain countries entirely.<br>
+    • <strong>Subscription tiers</strong> impose token limits, context window caps, and sub-agent restrictions that throttle what you can build — creating a new kind of "hardware limitation" that's actually a commercial one.</p>
+    <p>This means <strong>intentional programming is not uniformly accessible</strong>. A developer in one jurisdiction with a free tier gets a fundamentally different "compiler" than one with enterprise access to frontier models. Local open-weight models partially solve this — but at reduced capability.</p>
+  </div>
+
+  <h3>When can you work purely local?</h3>
+  <p>Local-only intentional programming is viable today for:</p>
+  <ul style="font-size:15px; padding-left:20px;">
+    <li>Single-file scripts and small utilities (models like Codestral, Qwen 2.5 Coder, DeepSeek Coder handle these well)</li>
+    <li>Prototyping and exploration where quality matters less than speed and privacy</li>
+    <li>Offline or air-gapped environments (military, healthcare, finance)</li>
+    <li>Workloads where you can tolerate "good enough" over frontier quality</li>
+  </ul>
+  <p>You need cloud access when you need:</p>
+  <ul style="font-size:15px; padding-left:20px;">
+    <li>Multi-file, architecture-level reasoning across large codebases</li>
+    <li>Long context windows (100K+ tokens) for understanding legacy systems</li>
+    <li>Sub-agent orchestration (multiple specialized models collaborating)</li>
+    <li>Frontier-quality code review, security analysis, or complex refactoring</li>
+  </ul>
+
+  <h2 id="compilation">The double compilation</h2>
+  <p>Traditional programming has one compilation step: source code → executable. Intentional programming introduces a <strong>two-stage compilation pipeline</strong> — and recognizing this changes how you think about the whole process.</p>
+
+  <div class="eq">
+    <span class="cmt">// Stage 1: Intent Compilation (probabilistic, iterative)</span><br>
+    <span class="var">human_intent</span> <span class="op">→</span> [reasoning agent] <span class="op">→</span> <span class="var">source_code</span><br><br>
+    <span class="cmt">// Stage 2: Traditional Compilation (deterministic, one-shot)</span><br>
+    <span class="var">source_code</span> <span class="op">→</span> [compiler/interpreter] <span class="op">→</span> <span class="var">executable</span><br><br>
+    <span class="cmt">// The full pipeline:</span><br>
+    <span class="var">intent</span> <span class="op">→</span> <span class="var">dialogue</span> <span class="op">→</span> <span class="var">source</span> <span class="op">→</span> <span class="var">binary</span> <span class="op">→</span> <span class="var">running system</span>
+  </div>
+
+  <h3>How the two stages differ</h3>
+  <table class="devtable">
+    <thead><tr><th>Property</th><th>Stage 1: Intent → Source</th><th>Stage 2: Source → Executable</th></tr></thead>
+    <tbody>
+      <tr><td>Engine</td><td>LLM / reasoning agent</td><td>Traditional compiler (gcc, javac, tsc…)</td></tr>
+      <tr><td>Determinism</td><td>Probabilistic — same input can yield different outputs</td><td>Deterministic — same input always yields same output</td></tr>
+      <tr><td>Iteration</td><td>Multiple passes via dialogue (the loop)</td><td>Usually single pass (or fixed multi-pass)</td></tr>
+      <tr><td>Verification</td><td>Human review + tests + type checking</td><td>Compiler errors + linker checks</td></tr>
+      <tr><td>Cost model</td><td>Per-token, per-iteration, time-variable</td><td>Electricity + fixed time</td></tr>
+      <tr><td>Failure mode</td><td>Subtly wrong code that compiles fine</td><td>Hard errors that block output</td></tr>
+      <tr><td>Input language</td><td>Natural language, diagrams, examples, voice</td><td>Formal language with strict grammar</td></tr>
+    </tbody>
+  </table>
+
+  <div class="analogy">
+    <span class="lbl">Analogy</span>
+    <p>Stage 1 is like an architect interpreting a client's vision into blueprints. Stage 2 is like the construction crew following those blueprints exactly. The blueprints (source code) remain the contract between the two worlds — probabilistic intent above, deterministic execution below.</p>
+  </div>
+
+  <p>This framing explains why <strong>source code isn't going away</strong> — it's the intermediate representation between two fundamentally different compilation stages. Some envision a future where Stage 1 produces executables directly (intent → binary), but today, source code remains the verifiable boundary where humans can inspect, test, and trust what was generated.</p>
+
+  <div class="callout tip">
+    <p><strong>The two-pass compiler pattern is resurfacing in AI code generation.</strong> Just as traditional compilers use a first pass for analysis and a second for optimization, AI coding systems are adopting similar architectures: a first "creative" pass generates code, and a second "analytical" pass verifies, optimizes, and hardens it. This mirrors the structure that gave us C, Java, and modern software engineering.</p>
+  </div>
+
   <h2 id="sources">Sources &amp; further reading</h2>
   <p>This framing synthesizes a few public pieces — orientation guides to the classic paradigms, plus recent arguments about what AI changes:</p>
   <ul class="refs">
@@ -981,6 +1083,12 @@ const game = new GuessGame();
     <li><strong>DataCamp</strong> — <a href="https://www.datacamp.com/blog/introduction-to-programming-paradigms">An Introductory Guide to Different Programming Paradigms</a>: the restaurant/chef analogy and the "no single best paradigm" point.</li>
     <li><strong>DEV Community</strong> — <a href="https://dev.to/favouritejome/the-world-of-programming-paradigms-3hbi">The World of Programming Paradigms</a> (Favourite Jome): the imperative-vs-declarative family tree.</li>
     <li>Plus <strong>Andrej Karpathy</strong> (who coined "vibe coding," Feb 2025) and <strong>Simon Willison</strong> (who drew the "vibe engineering" line) for the practitioner framing used in the sections above.</li>
+    <li><strong>o-mega.ai</strong> — <a href="https://o-mega.ai/articles/the-true-cost-of-llm-inference-in-2026">The True Cost of LLM Inference in 2026</a>: the 1,200× cost decline and its implications for agentic workflows.</li>
+    <li><strong>SitePoint</strong> — <a href="https://www.sitepoint.com/local-vs-cloud-ai-coding-performance-analysis-2026/">Local vs Cloud AI Coding: Latency, Privacy & Performance Guide</a> (2026): production-viable local workflows and measurable performance data.</li>
+    <li><strong>InfoWorld</strong> — <a href="https://www.infoworld.com/article/4154577/the-two-pass-compiler-is-back-this-time-its-fixing-ai-code-generation.html">The Two-Pass Compiler Is Back</a> (2025): how the two-pass pattern applies to AI code generation.</li>
+    <li><strong>SelfLabs</strong> — <a href="https://selflabs.substack.com/p/the-last-generation-of-programmers">The Last Generation of Programmers</a> (2026): the intent → AI → executable pipeline and the vanishing of source code as a bridge.</li>
+    <li><strong>EU AI Act</strong> — <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai">Regulatory Framework for AI</a>: the legislative context that shapes where and how AI models can be deployed.</li>
+    <li><strong>Prediction Guard</strong> — <a href="https://predictionguard.com/blog/self-hosted-vs-cloud-llm-deployment-guide">Self-Hosted vs Cloud LLM Deployment Guide</a>: a technical evaluation for regulated enterprises on governance, compliance, and cost trade-offs.</li>
   </ul>
 
   <footer>A structured reflection · framing of the agentic / intentional programming paradigm · generated in Claude Desktop with Opus 4.8</footer>
