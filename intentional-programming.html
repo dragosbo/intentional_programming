@@ -1092,6 +1092,34 @@ const game = new GuessGame();
 
   <p>This framing explains why <strong>source code isn't going away</strong> — and neither are specifications. They're the intermediate representations between three fundamentally different compilation stages. Some envision a future where Stage 1 produces executables directly (intent → binary), but that collapses three verification boundaries into zero. Today, specifications and source code remain where humans can inspect, challenge, and trust what was generated.</p>
 
+  <h3>Can the spec phase be skipped?</h3>
+  <p>It can be <em>implicit</em> but never truly absent. Even in a pure "vibe coding" session, the agent makes specification decisions — it just makes them invisibly inside its chain of thought. The triple compilation always happens; what varies is whether Stage 1 produces a <strong>visible artifact</strong> (a spec doc, a requirements list) or an <strong>invisible one</strong> (decisions buried in the chat history).</p>
+
+  <div class="stack">
+    <div class="layer" style="background:#7c3aed;">Explicit spec</div>
+    <div class="layer" style="background:#1f6feb;">Spec in chat</div>
+    <div class="layer" style="background:#0891b2;">Artifact IS the spec</div>
+  </div>
+  <table class="devtable" style="margin-top:12px;">
+    <thead><tr><th>Mode</th><th>Pipeline</th><th>Best for</th></tr></thead>
+    <tbody>
+      <tr><td>Explicit</td><td>intent → written spec → source → binary</td><td>Teams, regulated systems, long-lived code</td></tr>
+      <tr><td>Implicit</td><td>intent → [spec hidden in chat] → source → binary</td><td>Solo work, prototyping, exploratory coding</td></tr>
+      <tr><td>Collapsed</td><td>intent → [artifact embodies the spec] → binary</td><td>Content, documents, single-file tools</td></tr>
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:10px;">This project is an example of the "collapsed" mode: the HTML file <em>is</em> the specification rendered into its final form. Every heading, table, and design choice is a spec decision — never written separately, always visible in the result.</p>
+
+  <h3>The chat as artifact</h3>
+  <p>There's a fourth artifact that traditional compilation never produced: <strong>the conversation itself</strong>. The chat transcript records not just <em>what</em> was decided, but <em>why</em>, <em>what alternatives were considered</em>, and <em>how intent evolved</em> through interaction. It's the richest trace of the first compilation stage — more valuable in some ways than a polished spec because it preserves the reasoning path, not just the conclusion.</p>
+  <p>This suggests a new best practice: <strong>store the chat alongside the code</strong>. It serves as:</p>
+  <ul style="font-size:15px; padding-left:20px;">
+    <li>A decision log ("why did we use WebSockets instead of SSE?")</li>
+    <li>An onboarding document (new team members can read the intent behind the code)</li>
+    <li>A replayable specification (feed the chat to a new agent to regenerate or modify the artifact)</li>
+    <li>An audit trail for compliance and accountability</li>
+  </ul>
+
   <div class="callout tip">
     <p><strong>The two-pass compiler pattern is resurfacing in AI code generation.</strong> Just as traditional compilers use a first pass for analysis and a second for optimization, AI coding systems are adopting similar architectures: a first "creative" pass generates code, and a second "analytical" pass verifies, optimizes, and hardens it. The triple compilation extends this further — the spec pass is a zeroth pass that ensures you're solving the right problem before generating any code at all.</p>
   </div>
@@ -1207,7 +1235,7 @@ if __name__ == "__main__":
     <li><strong>Tianpan.co</strong> — <a href="https://tianpan.co/blog/2026-05-04-llm-as-compiler-plan-generation-execution-separation">LLM as Compiler: Separating Plan from Execution</a>: the compilation analogy applied to agentic systems.</li>
   </ul>
 
-  <footer>A structured reflection · framing of the agentic / intentional programming paradigm · generated in Claude Desktop with Opus 4.8<br><span style="font-size:11px; opacity:0.7;">v2.0 · Last updated: August 2025 · Dragos Boros</span></footer>
+  <footer>A structured reflection · framing of the agentic / intentional programming paradigm · generated in Claude Desktop with Opus 4.8<br><span style="font-size:11px; opacity:0.7;">v2.1 · Last updated: August 2025 · Dragos Boros</span></footer>
 
   <div style="margin-top:40px; background:#f0f7ff; border:1px solid #cfe4ff; border-radius:14px; padding:18px 20px;">
     <p style="margin:0 0 8px; font-size:13px; font-weight:700; color:#1f6feb;">💡 TIP: Generate a PDF from this page</p>

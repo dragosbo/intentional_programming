@@ -1,47 +1,42 @@
-# Changes — v2.0 (August 2025)
+# Changes — v2.1 (August 2025)
 
-## This session's updates
+## Latest update: Chat as artifact, spec as spectrum
 
-### 1. README rewrite — reflections on what this project is
+### Key insights added
 
-- **Document or web app?** The HTML file is both. It started as a static article but now contains interactive widgets (audio player, cost calculator, game). That blurriness is itself a feature of intentional programming — you don't decide the category upfront; you express intent and the artifact becomes what it needs to be.
-- **README vs specification:** Added a comparison table showing the different roles (forward-looking spec vs present-tense README), and noted that they blur in a project where the artifact *is* the content.
-- Updated the Mermaid diagram to reflect the full iterative workflow through Kiro.
-- Added version number (v2.0) to the header.
-- Noted that the entire workflow is itself an instance of the triple compilation.
+1. **The chat is an artifact** — the conversation transcript is the richest record of how intent became reality. It captures what was decided, why, and what was rejected. Worth storing alongside code for future reference, onboarding, and analysis.
 
-### 2. Triple Compilation (upgraded from "double")
+2. **The generated artifact embodies the specification** — the HTML file isn't separate from its spec; it *is* the spec in rendered form. Every section title, CSS choice, and table structure is a design decision that was never written elsewhere.
 
-Rewrote the compilation section with three stages:
-- **Stage 1:** Intent → Specification (collaborative, exploratory)
-- **Stage 2:** Specification → Source Code (generative, constrained by spec)
-- **Stage 3:** Source Code → Executable (deterministic, traditional)
+3. **The spec phase is implicit, never absent** — even in vibe coding, the agent makes spec decisions invisibly. The triple compilation always happens; what varies is visibility.
 
-Key argument: jumping from intent directly to code skips the most critical artifact — the specification. Making the spec explicit creates an auditable trail of *why* decisions were made.
+### Changes to HTML (intentional-programming.html)
 
-### 3. Three Developers, Three Realities
+- Added "Can the spec phase be skipped?" subsection with a three-mode spectrum:
+  - **Explicit:** intent → written spec → source → binary (most auditable)
+  - **Implicit:** intent → [spec in chat] → source → binary (most fluid)
+  - **Collapsed:** intent → [artifact IS the spec] → binary (this project)
+- Added "The chat as artifact" subsection: why storing the conversation matters (decision log, onboarding doc, replayable spec, audit trail)
+- Version bumped to v2.1
 
-Jurisdiction comparison table (US / Switzerland / China):
-- US: unrestricted access, budget as main constraint
-- Switzerland: full access + FADP compliance, Azure Switzerland North, Swiss-hosted alternatives
-- China: Great Firewall blocks Western models; DeepSeek V4 Pro (80.6% SWE-bench) competitive at 1/50th cost; shadow APIs exist but carry legal risk
+### Changes to README
 
-Insight: "Geography is now a compiler flag."
+- Added "On artifacts and specifications" section with the three insights
+- Added the spec-mode spectrum diagram
+- Version bumped to 2.1
 
-### 4. Try It Yourself
+### PDF regenerated
 
-Worked example: "Build me a countdown timer in Python" traced through all three compilation stages with generated code, implicit spec decisions, and commentary.
+Reflects all content through v2.1 including triple compilation, jurisdiction scenarios, cost calculator, try-it-yourself, and the new spec/chat reflections.
 
-### 5. Cost Calculator
+---
 
-Interactive widget with formula: (prompts × tokens × multiplier × price) ÷ 1M = daily cost. Links to 5 token calculators/tokenizers.
+## Previous changes (v2.0)
 
-### 6. Versioning
-
-Footer now shows: v2.0 · Last updated: August 2025 · Dragos Boros
-
-### 7. Housekeeping
-
-- Removed `.vscode/settings.json` from git tracking
-- Added 4 new references (Chinese models, Swiss FDPIC, Asia Society, LLM-as-compiler)
-- Nav bar updated with new section links
+- Triple compilation (upgraded from double)
+- Three developers, three realities (US/CH/CN jurisdiction comparison)
+- Try it yourself (worked countdown timer example)
+- Interactive cost calculator with token calculator links
+- Versioning in footer
+- .vscode/settings.json removed from tracking
+- 4 new references added

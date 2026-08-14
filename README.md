@@ -4,7 +4,7 @@ A minimal exploration of the intentional programming paradigm — created entire
 
 **Author:** Dragos Boros  
 **Date:** August 2025  
-**Version:** 2.0
+**Version:** 2.1
 
 ## What's in here
 
@@ -40,6 +40,24 @@ This README overlaps with a specification document — but they serve different 
 | **Lifecycle** | Lives during development, may become stale | Lives as long as the repo exists |
 
 In this project they blur because the artifact *is* the content — there's no separate "app" to document. The README is the entry point for humans; the HTML is the entry point for browsers.
+
+## On artifacts and specifications
+
+Three insights from building this project:
+
+1. **The chat is an artifact.** The conversation with the agent — every prompt, every refinement, every "no, I meant this" — is the richest record of how intent became reality. It captures not just *what* was decided, but *why* and *what alternatives were rejected*. It's worth storing alongside the code for future reference and analysis.
+
+2. **The generated artifact embodies the specification.** The HTML file isn't just the output of a spec — it *is* the spec in its final rendered form. Every section title, every table structure, every CSS choice is a design decision that was never written in a separate document. The artifact carries its own specification inside it.
+
+3. **The spec phase can be implicit but never absent.** Even when you skip writing a formal spec, the agent still makes spec decisions — it just makes them invisibly inside its reasoning. The triple compilation always happens; the question is whether Stage 1 produces a visible artifact (a spec doc you can review) or an invisible one (decisions buried in the chat). For throwaway scripts, implicit is fine. For anything you'll maintain or hand off, making it explicit wins.
+
+This means the "triple compilation" is really a spectrum:
+
+```
+Explicit:   intent → written spec → source → binary    (most auditable)
+Implicit:   intent → [spec hidden in chat] → source → binary    (most fluid)
+Collapsed:  intent → [artifact IS the spec] → binary    (this project)
+```
 
 ## Getting started
 
