@@ -250,7 +250,9 @@
     <a href="#example">Example</a>
     <a href="#memes">Memes</a>
     <a href="#infra">Infrastructure</a>
-    <a href="#compilation">Double Compilation</a>
+    <a href="#compilation">Triple Compilation</a>
+    <a href="#try">Try It</a>
+    <a href="#cost-calc">Cost Calc</a>
     <a href="#sources">Sources</a>
   </nav>
 
@@ -1022,6 +1024,20 @@ const game = new GuessGame();
     <p>This means <strong>intentional programming is not uniformly accessible</strong>. A developer in one jurisdiction with a free tier gets a fundamentally different "compiler" than one with enterprise access to frontier models. Local open-weight models partially solve this — but at reduced capability.</p>
   </div>
 
+  <h3>Three developers, three realities</h3>
+  <p>The same intent — "build me a REST API with authentication" — compiles differently depending on where you sit:</p>
+  <table class="devtable">
+    <thead><tr><th>Aspect</th><th>🇺🇸 United States</th><th>🇨🇭 Switzerland</th><th>🇨🇳 China</th></tr></thead>
+    <tbody>
+      <tr><td>Available models</td><td>All: GPT-5, Claude, Gemini, DeepSeek, Qwen — unrestricted</td><td>All US/EU models available; Azure OpenAI offers Switzerland North data residency; Swiss-hosted options (Euria/Infomaniak) for full sovereignty</td><td>ChatGPT, Claude, Gemini blocked by Great Firewall. Domestic: DeepSeek, Qwen, Kimi, Doubao, Zhipu AI</td></tr>
+      <tr><td>Legal framework</td><td>Minimal federal AI regulation; state-level varies; no data residency mandate</td><td>FADP (Federal Data Protection Act, Sept 2023) applies directly to AI; not bound by EU AI Act but aligns ~85% via GDPR adequacy</td><td>Cyberspace Administration approval required for public-facing AI; strict content filtering; data must stay onshore</td></tr>
+      <tr><td>Practical "compiler"</td><td>Frontier models, unlimited tiers, full sub-agent access</td><td>Frontier models via API + option for in-region inference; enterprises often choose Swiss-hosted for compliance</td><td>Chinese models (DeepSeek V4 Pro scores 80.6% SWE-bench — competitive with frontier); some devs use shadow APIs to access Western models</td></tr>
+      <tr><td>Cost profile</td><td>Pay-per-token at published rates; competition keeps prices low</td><td>Slight premium for in-region inference; Swiss-hosted services add hosting cost layer</td><td>Dramatically cheaper: DeepSeek at $0.14–$0.87/M tokens vs. $5–$30 for Western frontier models</td></tr>
+      <tr><td>Key constraint</td><td>Subscription tier / budget</td><td>Data residency compliance</td><td>Model availability behind the firewall; content filtering limits</td></tr>
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:10px;">The takeaway: intentional programming works everywhere, but the quality, cost, and legal overhead of your "compiler" vary dramatically by jurisdiction. A Chinese developer using DeepSeek V4 Pro gets near-frontier code quality at 1/50th the token cost — but can't use it for certain content. A Swiss developer gets full model access but may need in-region inference for compliance. Geography is now a compiler flag.</p>
+
   <h3>When can you work purely local?</h3>
   <p>Local-only intentional programming is viable today for:</p>
   <ul style="font-size:15px; padding-left:20px;">
@@ -1038,41 +1054,137 @@ const game = new GuessGame();
     <li>Frontier-quality code review, security analysis, or complex refactoring</li>
   </ul>
 
-  <h2 id="compilation">The double compilation</h2>
-  <p>Traditional programming has one compilation step: source code → executable. Intentional programming introduces a <strong>two-stage compilation pipeline</strong> — and recognizing this changes how you think about the whole process.</p>
+  <h2 id="compilation">The triple compilation</h2>
+  <p>Traditional programming has one compilation step: source code → executable. Intentional programming introduces a <strong>three-stage compilation pipeline</strong> — and recognizing this changes how you think about the whole process.</p>
 
   <div class="eq">
-    <span class="cmt">// Stage 1: Intent Compilation (probabilistic, iterative)</span><br>
-    <span class="var">human_intent</span> <span class="op">→</span> [reasoning agent] <span class="op">→</span> <span class="var">source_code</span><br><br>
-    <span class="cmt">// Stage 2: Traditional Compilation (deterministic, one-shot)</span><br>
+    <span class="cmt">// Stage 1: Intent → Specification (probabilistic, collaborative)</span><br>
+    <span class="var">human_intent</span> <span class="op">→</span> [reasoning agent + human dialogue] <span class="op">→</span> <span class="var">specification</span><br><br>
+    <span class="cmt">// Stage 2: Specification → Source Code (probabilistic, generative)</span><br>
+    <span class="var">specification</span> <span class="op">→</span> [reasoning agent] <span class="op">→</span> <span class="var">source_code</span><br><br>
+    <span class="cmt">// Stage 3: Source → Executable (deterministic, one-shot)</span><br>
     <span class="var">source_code</span> <span class="op">→</span> [compiler/interpreter] <span class="op">→</span> <span class="var">executable</span><br><br>
     <span class="cmt">// The full pipeline:</span><br>
-    <span class="var">intent</span> <span class="op">→</span> <span class="var">dialogue</span> <span class="op">→</span> <span class="var">source</span> <span class="op">→</span> <span class="var">binary</span> <span class="op">→</span> <span class="var">running system</span>
+    <span class="var">intent</span> <span class="op">→</span> <span class="var">spec</span> <span class="op">→</span> <span class="var">source</span> <span class="op">→</span> <span class="var">binary</span> <span class="op">→</span> <span class="var">running system</span>
   </div>
 
-  <h3>How the two stages differ</h3>
+  <p>Why three stages and not two? Because jumping from raw intent to source code skips the most critical engineering artifact: the <strong>specification</strong>. In practice, every successful agentic session involves an implicit or explicit spec phase — requirements, constraints, acceptance criteria, architecture decisions. Making this stage explicit (as tools like Kiro do with their spec-driven workflow) produces better code and creates an auditable trail of <em>why</em> decisions were made, not just <em>what</em> was generated.</p>
+
+  <h3>How the three stages differ</h3>
   <table class="devtable">
-    <thead><tr><th>Property</th><th>Stage 1: Intent → Source</th><th>Stage 2: Source → Executable</th></tr></thead>
+    <thead><tr><th>Property</th><th>Stage 1: Intent → Spec</th><th>Stage 2: Spec → Source</th><th>Stage 3: Source → Executable</th></tr></thead>
     <tbody>
-      <tr><td>Engine</td><td>LLM / reasoning agent</td><td>Traditional compiler (gcc, javac, tsc…)</td></tr>
-      <tr><td>Determinism</td><td>Probabilistic — same input can yield different outputs</td><td>Deterministic — same input always yields same output</td></tr>
-      <tr><td>Iteration</td><td>Multiple passes via dialogue (the loop)</td><td>Usually single pass (or fixed multi-pass)</td></tr>
-      <tr><td>Verification</td><td>Human review + tests + type checking</td><td>Compiler errors + linker checks</td></tr>
-      <tr><td>Cost model</td><td>Per-token, per-iteration, time-variable</td><td>Electricity + fixed time</td></tr>
-      <tr><td>Failure mode</td><td>Subtly wrong code that compiles fine</td><td>Hard errors that block output</td></tr>
-      <tr><td>Input language</td><td>Natural language, diagrams, examples, voice</td><td>Formal language with strict grammar</td></tr>
+      <tr><td>Engine</td><td>LLM + human dialogue</td><td>LLM / reasoning agent</td><td>Traditional compiler (gcc, javac, tsc…)</td></tr>
+      <tr><td>Determinism</td><td>Highly probabilistic — exploring the problem space</td><td>Probabilistic — but constrained by the spec</td><td>Deterministic — same input always yields same output</td></tr>
+      <tr><td>Output</td><td>Requirements, design docs, acceptance criteria</td><td>Source code, tests, configs</td><td>Binary, bytecode, bundle</td></tr>
+      <tr><td>Iteration</td><td>Multiple rounds of Q&amp;A and refinement</td><td>Generate → review → refine loop</td><td>Usually single pass</td></tr>
+      <tr><td>Verification</td><td>Human judgment: "is this what I meant?"</td><td>Tests, type checking, human review</td><td>Compiler errors + linker checks</td></tr>
+      <tr><td>Cost model</td><td>Per-token + human time (most expensive)</td><td>Per-token, per-iteration</td><td>Electricity + fixed time (cheapest)</td></tr>
+      <tr><td>Failure mode</td><td>Misunderstood requirements (wrong thing built right)</td><td>Subtly wrong code that compiles fine</td><td>Hard errors that block output</td></tr>
+      <tr><td>Input</td><td>Natural language, sketches, examples, voice</td><td>Structured spec + context</td><td>Formal language with strict grammar</td></tr>
     </tbody>
   </table>
 
   <div class="analogy">
     <span class="lbl">Analogy</span>
-    <p>Stage 1 is like an architect interpreting a client's vision into blueprints. Stage 2 is like the construction crew following those blueprints exactly. The blueprints (source code) remain the contract between the two worlds — probabilistic intent above, deterministic execution below.</p>
+    <p>Stage 1 is the client briefing the architect: "I want a house with lots of light and room for the kids." Stage 2 is the architect producing blueprints from that brief. Stage 3 is the construction crew building from the blueprints. Each stage transforms fuzzy intent into something more precise — and each creates a verifiable artifact (brief → blueprint → building) that the next stage consumes.</p>
   </div>
 
-  <p>This framing explains why <strong>source code isn't going away</strong> — it's the intermediate representation between two fundamentally different compilation stages. Some envision a future where Stage 1 produces executables directly (intent → binary), but today, source code remains the verifiable boundary where humans can inspect, test, and trust what was generated.</p>
+  <p>This framing explains why <strong>source code isn't going away</strong> — and neither are specifications. They're the intermediate representations between three fundamentally different compilation stages. Some envision a future where Stage 1 produces executables directly (intent → binary), but that collapses three verification boundaries into zero. Today, specifications and source code remain where humans can inspect, challenge, and trust what was generated.</p>
 
   <div class="callout tip">
-    <p><strong>The two-pass compiler pattern is resurfacing in AI code generation.</strong> Just as traditional compilers use a first pass for analysis and a second for optimization, AI coding systems are adopting similar architectures: a first "creative" pass generates code, and a second "analytical" pass verifies, optimizes, and hardens it. This mirrors the structure that gave us C, Java, and modern software engineering.</p>
+    <p><strong>The two-pass compiler pattern is resurfacing in AI code generation.</strong> Just as traditional compilers use a first pass for analysis and a second for optimization, AI coding systems are adopting similar architectures: a first "creative" pass generates code, and a second "analytical" pass verifies, optimizes, and hardens it. The triple compilation extends this further — the spec pass is a zeroth pass that ensures you're solving the right problem before generating any code at all.</p>
+  </div>
+
+  <h2 id="try">Try it yourself</h2>
+  <p>Here's a concrete intent statement. Trace it through the triple compilation in your head — or better, try it in your AI tool of choice:</p>
+
+  <div class="example">
+    <div class="head">
+      <div class="dot" style="background:#7c3aed;"></div>
+      <h4>Intent: "Build me a countdown timer"</h4>
+    </div>
+    <div class="intent">
+      <span class="lg">Your prompt (Stage 1 input)</span>
+      "Build me a countdown timer in Python. The user enters a number of seconds, it counts down to zero showing the remaining time, then prints 'Time's up!' with a beep sound."
+    </div>
+    <p class="note" style="margin-top:14px;"><strong>Stage 1 — Intent → Spec.</strong> What happens (implicitly or explicitly):</p>
+    <ul style="font-size:13.5px; color:#4a525c; padding-left:18px; margin:6px 0;">
+      <li>What type of app? CLI, GUI, web? → CLI (inferred from "prints")</li>
+      <li>What happens on invalid input? → Agent decides: show error, re-prompt</li>
+      <li>Cross-platform beep? → Agent picks <code>\a</code> or <code>winsound</code></li>
+      <li>Display format? → Agent chooses: overwrite in place with <code>\r</code></li>
+    </ul>
+    <p class="note"><strong>Stage 2 — Spec → Source.</strong> The agent generates:</p>
+    <pre class="code">import time, sys
+
+def countdown(seconds):
+    for remaining in range(seconds, 0, -1):
+        sys.stdout.write(f"\r⏱ {remaining:3d}s remaining")
+        sys.stdout.flush()
+        time.sleep(1)
+    print("\r🔔 Time's up!        \a")
+
+if __name__ == "__main__":
+    try:
+        secs = int(input("Enter seconds: "))
+        if secs <= 0: raise ValueError
+        countdown(secs)
+    except ValueError:
+        print("Please enter a positive integer.")</pre>
+    <p class="note"><strong>Stage 3 — Source → Executable.</strong> Python interprets this directly — <code>python countdown.py</code> — no separate compilation needed. In a compiled language, this is where <code>gcc</code> or <code>javac</code> takes over.</p>
+    <p class="note" style="margin-top:12px;"><strong>What to notice:</strong> You specified ~25 words of intent. The agent made at least 6 design decisions (CLI vs GUI, error handling, display format, beep implementation, countdown direction, output clearing). Those decisions are the "spec" stage — invisible here, but they happened inside the model's reasoning. Making them explicit (by asking the agent to list its assumptions first) is what separates intentional programming from vibe coding.</p>
+  </div>
+
+  <h2 id="cost-calc">Estimate your compilation cost</h2>
+  <p>A rough calculator for understanding what your agentic "compilation" costs per session. Adjust the numbers to match your usage:</p>
+
+  <div class="game" style="border-color:#cfe4ff; background:#f0f7ff;">
+    <div class="game-row" style="flex-wrap:wrap; gap:10px; align-items:flex-end;">
+      <div>
+        <label style="font-size:11px; font-weight:700; color:#5b6470; display:block; margin-bottom:3px;">Prompts/day</label>
+        <input type="number" id="calc-prompts" value="30" min="1" style="width:80px;">
+      </div>
+      <div>
+        <label style="font-size:11px; font-weight:700; color:#5b6470; display:block; margin-bottom:3px;">Avg tokens/prompt</label>
+        <input type="number" id="calc-tokens" value="2000" min="100" step="100" style="width:96px;">
+      </div>
+      <div>
+        <label style="font-size:11px; font-weight:700; color:#5b6470; display:block; margin-bottom:3px;">Output multiplier</label>
+        <input type="number" id="calc-mult" value="3" min="1" max="10" step="0.5" style="width:64px;">
+      </div>
+      <div>
+        <label style="font-size:11px; font-weight:700; color:#5b6470; display:block; margin-bottom:3px;">$/M tokens (output)</label>
+        <input type="number" id="calc-price" value="15" min="0.05" step="0.5" style="width:80px;">
+      </div>
+      <button onclick="calcCost()" style="height:38px;">Calculate</button>
+    </div>
+    <div id="calc-result" class="msg" style="margin-top:14px;"></div>
+    <p style="font-size:11.5px; color:#5b6470; margin:8px 0 0;">Formula: (prompts × tokens × multiplier × price) ÷ 1,000,000 = daily cost. Multiplier accounts for output being longer than input + agent chain-of-thought overhead.</p>
+  </div>
+  <script>
+  function calcCost() {
+    const prompts = +document.getElementById('calc-prompts').value;
+    const tokens = +document.getElementById('calc-tokens').value;
+    const mult = +document.getElementById('calc-mult').value;
+    const price = +document.getElementById('calc-price').value;
+    const daily = (prompts * tokens * mult * price) / 1000000;
+    const monthly = daily * 22;
+    document.getElementById('calc-result').innerHTML =
+      `<span style="color:#1f6feb;">Daily: $${daily.toFixed(2)}</span> · <span style="color:#7c3aed;">Monthly (22 work days): $${monthly.toFixed(2)}</span>` +
+      `<br><span style="font-size:12px; color:#5b6470;">Total tokens/day: ${(prompts*tokens*mult).toLocaleString()} · That's ${((prompts*tokens*mult)/1000000).toFixed(2)}M tokens</span>`;
+  }
+  </script>
+
+  <div class="callout tip" style="margin-top:16px;">
+    <p><strong>Token calculators &amp; cost estimators:</strong> Use these tools to measure your actual usage and plan your budget:</p>
+    <ul style="font-size:14px; padding-left:18px; margin:8px 0 0;">
+      <li><a href="https://langcopilot.com/tools/token-calculator" style="color:#1f6feb;">LangCopilot Token Calculator</a> — supports 65+ models with prompt caching and batch pricing</li>
+      <li><a href="https://llmgateway.io/token-cost-calculator" style="color:#1f6feb;">LLM Gateway Tokenizer</a> — runs a real BPE tokenizer in-browser for exact counts</li>
+      <li><a href="https://llm-calculator.com/" style="color:#1f6feb;">LLM Calculator</a> — privacy-first, browser-only GPT/Llama/Gemini token counter</li>
+      <li><a href="https://www.cloudzero.com/blog/llm-cost-calculator/" style="color:#1f6feb;">CloudZero LLM Cost Calculator</a> — estimate monthly spend from model, tokens, and volume</li>
+      <li><a href="https://platform.openai.com/tokenizer" style="color:#1f6feb;">OpenAI Tokenizer</a> — official tool to see how text splits into tokens</li>
+    </ul>
   </div>
 
   <h2 id="sources">Sources &amp; further reading</h2>
@@ -1089,9 +1201,13 @@ const game = new GuessGame();
     <li><strong>SelfLabs</strong> — <a href="https://selflabs.substack.com/p/the-last-generation-of-programmers">The Last Generation of Programmers</a> (2026): the intent → AI → executable pipeline and the vanishing of source code as a bridge.</li>
     <li><strong>EU AI Act</strong> — <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai">Regulatory Framework for AI</a>: the legislative context that shapes where and how AI models can be deployed.</li>
     <li><strong>Prediction Guard</strong> — <a href="https://predictionguard.com/blog/self-hosted-vs-cloud-llm-deployment-guide">Self-Hosted vs Cloud LLM Deployment Guide</a>: a technical evaluation for regulated enterprises on governance, compliance, and cost trade-offs.</li>
+    <li><strong>CodingSera</strong> — <a href="https://codersera.com/blog/deepseek-v4-alternatives-qwen-kimi-minimax-gpt-claude-compared/">DeepSeek V4 vs Qwen, GPT, Claude, Kimi & MiniMax</a> (2026): Chinese models reaching frontier performance at a fraction of the cost.</li>
+    <li><strong>Swiss FDPIC</strong> — <a href="https://www.edoeb.admin.ch/en/update-current-legislation-directly-applicable-ai">Current Data Protection Legislation Applicable to AI</a>: Switzerland's position on AI and the Federal Data Protection Act.</li>
+    <li><strong>Asia Society</strong> — <a href="https://centerforchinaanalysis.asiasociety.org/p/reporting-back-from-waic-2026-how">How China's AI Ecosystem Is Adapting</a> (WAIC 2026): compute constraints, open models, and governance in China.</li>
+    <li><strong>Tianpan.co</strong> — <a href="https://tianpan.co/blog/2026-05-04-llm-as-compiler-plan-generation-execution-separation">LLM as Compiler: Separating Plan from Execution</a>: the compilation analogy applied to agentic systems.</li>
   </ul>
 
-  <footer>A structured reflection · framing of the agentic / intentional programming paradigm · generated in Claude Desktop with Opus 4.8</footer>
+  <footer>A structured reflection · framing of the agentic / intentional programming paradigm · generated in Claude Desktop with Opus 4.8<br><span style="font-size:11px; opacity:0.7;">v2.0 · Last updated: August 2025 · Dragos Boros</span></footer>
 
   <div style="margin-top:40px; background:#f0f7ff; border:1px solid #cfe4ff; border-radius:14px; padding:18px 20px;">
     <p style="margin:0 0 8px; font-size:13px; font-weight:700; color:#1f6feb;">💡 TIP: Generate a PDF from this page</p>
